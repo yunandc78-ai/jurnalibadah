@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jurnal Ibadah Harian - Islamic Daily Tracker & Reflection</title>
+  <meta name="description" content="Aplikasi pencatat checklist ibadah harian, target Al-Qur'an 1 'ain & 5 ayat, refleksi diri, dan statistik istiqomah dengan desain elegan.">
+  <meta name="theme-color" content="#071712">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Amiri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/png" href="logo-amwa.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-dark">
+  <!-- Canvas for celebration confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-wrapper">
+    <div class="app-container">
+      
+      <!-- Top Navigation Header -->
+      <header class="app-header">
+        <div class="header-top">
+          <div class="brand">
+            <div class="brand-icon clickable-admin-trigger" id="brand-logo-amwa" title="Al Muhajirin Wal Anshor (AMWA) - Super User Admin" role="button" tabindex="0">
+              <img src="logo-amwa.png" alt="Logo AMWA - Al Muhajirin Wal Anshor" class="brand-logo-img">
+            </div>
+            <div>
+              <h1 class="brand-title">Jurnal Ibadah</h1>
+              <p class="brand-subtitle">AMWA &bull; Al Muhajirin Wal Anshor</p>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <!-- User Login / Profile Button (When not logged in) -->
+            <button id="btn-open-user-modal" class="btn-user-auth" title="Masuk / Daftar Pengguna" aria-label="Masuk Pengguna">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span class="auth-btn-label">Masuk Pengguna</span>
+            </button>
+
+            <!-- User Profile Pill (When a user is active) -->
+            <div id="user-profile-badge" class="user-profile-pill hidden" role="button" tabindex="0" title="Akun Pengguna">
+              <div class="user-avatar-wrap">
+                <span id="user-avatar-fallback" class="user-avatar-fallback">U</span>
+              </div>
+              <span id="user-display-name" class="user-name-text">Pengguna</span>
+              <svg class="chevron-user" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+
+            <!-- Sound toggle button -->
+            <button id="btn-sound-toggle" class="icon-btn" title="Aktif/Nonaktifkan Suara" aria-label="Toggle Sound">
+              <svg id="icon-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              <svg id="icon-sound-off" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+            </button>
+
+            <!-- Theme Toggle -->
+            <button id="btn-theme-toggle" class="icon-btn" title="Ganti Tema" aria-label="Toggle Theme">
+              <svg id="icon-sun" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </button>
+
+            <!-- Backup & Export -->
+            <button id="btn-menu-toggle" class="icon-btn" title="Pengaturan & Backup" aria-label="Settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Date & Hijri Banner Bar -->
+        <div class="date-navigator-card">
+          <div class="date-navigator">
+            <button id="btn-prev-day" class="nav-arrow" title="Hari Sebelumnya" aria-label="Previous day">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            
+            <div class="date-display-box" id="date-display-trigger" role="button" tabindex="0">
+              <div class="hijri-badge" id="hijri-date-label">17 Rabiul Awwal 1448 H</div>
+              <div class="current-date-text" id="gregorian-date-label">Selasa, 29 September 2026</div>
+              <span class="date-jump-hint">Ketuk untuk ubah tanggal ▾</span>
+            </div>
+
+            <button id="btn-next-day" class="nav-arrow" title="Hari Berikutnya" aria-label="Next day">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+          <div class="date-quick-actions">
+            <button id="btn-go-today" class="btn-pill-small">Hari Ini</button>
+            <div class="streak-pill" id="streak-badge" title="Rangkaian hari beribadah konsisten">
+              <span class="flame-icon">🔥</span>
+              <span id="streak-count">0</span> Hari Istiqomah
+            </div>
+          </div>
+          <input type="date" id="native-date-input" class="hidden-date-input">
+        </div>
+      </header>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="app-nav-tabs">
+        <button class="nav-tab active" data-tab="tab-journal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Jurnal</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-quran">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          <span>Al-Qur'an</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-stats">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <span>Statistik</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-history">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          <span>Riwayat</span>
+        </button>
+      </nav>
+
+      <!-- TAB 1: JURNAL HARIAN -->
+      <main id="tab-journal" class="tab-content active">
+        
+        <!-- Daily Progress Overview Banner -->
+        <section class="progress-hero-card">
+          <div class="progress-ring-container">
+            <svg class="progress-ring" width="86" height="86">
+              <circle class="progress-ring-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="35" cx="43" cy="43"/>
+              <circle id="daily-progress-circle" class="progress-ring-fill" stroke="currentColor" stroke-width="8" stroke-dasharray="219.9" stroke-dashoffset="219.9" stroke-linecap="round" fill="transparent" r="35" cx="43" cy="43"/>
+            </svg>
+            <div class="progress-percentage-label">
+              <span id="progress-percentage-text">0%</span>
+            </div>
+          </div>
+
+          <div class="progress-hero-text">
+            <div class="status-badge" id="daily-status-badge">Ayo Mulai Ibadah!</div>
+            <h2 class="progress-title" id="progress-hero-headline">Belum Ada Catatan</h2>
+            <p class="progress-desc" id="progress-hero-sub">Lengkapi amalan wajib, sunnah, dan Al-Qur'an hari ini.</p>
+          </div>
+        </section>
+
+        <!-- Quick Summary Mini Badges -->
+        <div class="quick-stats-row">
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Wajib</span>
+            <span class="mini-stat-val" id="mini-wajib-count">0/5</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Rawatib</span>
+            <span class="mini-stat-val" id="mini-rawatib-count">0/8</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Sunnah</span>
+            <span class="mini-stat-val" id="mini-sunnah-count">0/3</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Al-Qur'an</span>
+            <span class="mini-stat-val" id="mini-quran-count">0/3</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Lainnya</span>
+            <span class="mini-stat-val" id="mini-lain-count">0/4</span>
+          </div>
+        </div>
+
+        <!-- SECTION 1: SHOLAT WAJIB -->
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">🕌</span>
+              <div>
+                <h3 class="section-title">Sholat Wajib 5 Waktu</h3>
+                <p class="section-subtitle">Tiang agama, jangan pernah ditinggalkan</p>
+              </div>
+            </div>
+            <span class="section-counter" id="badge-wajib">0/5</span>
+          </div>
+
+          <div class="checklist-grid grid-2">
+            <!-- Subuh -->
+            <div class="check-item-card" data-key="subuh" data-cat="wajib">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Subuh</span>
+                  <span class="check-detail">2 Rakaat</span>
+                </div>
+              </div>
+              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                <span class="jamaah-pill">Jamaah</span>
+              </button>
+            </div>
+
+            <!-- Dzuhur -->
+            <div class="check-item-card" data-key="dzuhur" data-cat="wajib">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Dzuhur</span>
+                  <span class="check-detail">4 Rakaat</span>
+                </div>
+              </div>
+              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                <span class="jamaah-pill">Jamaah</span>
+              </button>
+            </div>
+
+            <!-- Ashar -->
+            <div class="check-item-card" data-key="ashar" data-cat="wajib">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Ashar</span>
+                  <span class="check-detail">4 Rakaat</span>
+                </div>
+              </div>
+              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                <span class="jamaah-pill">Jamaah</span>
+              </button>
+            </div>
+
+            <!-- Maghrib -->
+            <div class="check-item-card" data-key="maghrib" data-cat="wajib">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Maghrib</span>
+                  <span class="check-detail">3 Rakaat</span>
+                </div>
+              </div>
+              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                <span class="jamaah-pill">Jamaah</span>
+              </button>
+            </div>
+
+            <!-- Isya -->
+            <div class="check-item-card span-full" data-key="isya" data-cat="wajib">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Isya</span>
+                  <span class="check-detail">4 Rakaat</span>
+                </div>
+              </div>
+              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                <span class="jamaah-pill">Jamaah</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: SHOLAT SUNNAH RAWATIB -->
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">✨</span>
+              <div>
+                <h3 class="section-title">Sholat Sunnah Rawatib</h3>
+                <p class="section-subtitle">Qobliyah & Ba'diyah pengiring sholat fardhu</p>
+              </div>
+            </div>
+            <span class="section-counter" id="badge-rawatib">0/8</span>
+          </div>
+
+          <!-- Hadits Keutamaan Rawatib -->
+          <div class="rawatib-hadith-pill">
+            <span class="hadith-star">⭐</span>
+            <span>"Siapa shalat 12 rakaat rawatib sehari semalam, dibangunkan baginya rumah di surga." (HR. Muslim)</span>
+          </div>
+
+          <!-- Group Subuh -->
+          <div class="rawatib-fardhu-block">
+            <div class="rawatib-fardhu-header">
+              <span class="fardhu-tag">Subuh</span>
+              <span class="fardhu-note">Sebelum fardhu</span>
+            </div>
+            <div class="checklist-grid grid-1">
+              <div class="check-item-card" data-key="qobliyahSubuh" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Qobliyah Subuh</span>
+                    <span class="check-detail">2 Rakaat Fajar</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag muakkad" title="Sangat dianjurkan">Mu'akkadah</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group Dzuhur -->
+          <div class="rawatib-fardhu-block">
+            <div class="rawatib-fardhu-header">
+              <span class="fardhu-tag">Dzuhur</span>
+              <span class="fardhu-note">Sebelum & sesudah fardhu</span>
+            </div>
+            <div class="checklist-grid grid-2">
+              <div class="check-item-card" data-key="qobliyahDzuhur" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Qobliyah Dzuhur</span>
+                    <span class="check-detail">2 / 4 Rakaat</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag muakkad">Mu'akkadah</span>
+              </div>
+
+              <div class="check-item-card" data-key="badiyahDzuhur" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Ba'diyah Dzuhur</span>
+                    <span class="check-detail">2 Rakaat</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag muakkad">Mu'akkadah</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group Ashar -->
+          <div class="rawatib-fardhu-block">
+            <div class="rawatib-fardhu-header">
+              <span class="fardhu-tag">Ashar</span>
+              <span class="fardhu-note">Sebelum fardhu</span>
+            </div>
+            <div class="checklist-grid grid-1">
+              <div class="check-item-card" data-key="qobliyahAshar" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Qobliyah Ashar</span>
+                    <span class="check-detail">2 / 4 Rakaat</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag ghairu" title="Dianjurkan">Ghairu Mu'akkadah</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group Maghrib -->
+          <div class="rawatib-fardhu-block">
+            <div class="rawatib-fardhu-header">
+              <span class="fardhu-tag">Maghrib</span>
+              <span class="fardhu-note">Sebelum & sesudah fardhu</span>
+            </div>
+            <div class="checklist-grid grid-2">
+              <div class="check-item-card" data-key="qobliyahMaghrib" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Qobliyah Maghrib</span>
+                    <span class="check-detail">2 Rakaat</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag ghairu">Ghairu Mu'akkadah</span>
+              </div>
+
+              <div class="check-item-card" data-key="badiyahMaghrib" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Ba'diyah Maghrib</span>
+                    <span class="check-detail">2 Rakaat</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag muakkad">Mu'akkadah</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group Isya -->
+          <div class="rawatib-fardhu-block">
+            <div class="rawatib-fardhu-header">
+              <span class="fardhu-tag">Isya</span>
+              <span class="fardhu-note">Sebelum & sesudah fardhu</span>
+            </div>
+            <div class="checklist-grid grid-2">
+              <div class="check-item-card" data-key="qobliyahIsya" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Qobliyah Isya</span>
+                    <span class="check-detail">2 Rakaat</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag ghairu">Ghairu Mu'akkadah</span>
+              </div>
+
+              <div class="check-item-card" data-key="badiyahIsya" data-cat="rawatib">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Ba'diyah Isya</span>
+                    <span class="check-detail">2 Rakaat</span>
+                  </div>
+                </div>
+                <span class="sunnah-tag muakkad">Mu'akkadah</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3: SHOLAT SUNNAH WAKTU TERTENTU -->
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">🌟</span>
+              <div>
+                <h3 class="section-title">Sholat Sunnah Lain</h3>
+                <p class="section-subtitle">Dhuha, Tahajud, & Witir</p>
+              </div>
+            </div>
+            <span class="section-counter" id="badge-sunnah">0/3</span>
+          </div>
+
+          <div class="checklist-grid grid-3">
+            <!-- Dhuha -->
+            <div class="check-item-card" data-key="dhuha" data-cat="sunnah">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Dhuha</span>
+                  <span class="check-detail">Min. 2 Rakaat</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tahajud -->
+            <div class="check-item-card" data-key="tahajud" data-cat="sunnah">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Tahajud</span>
+                  <span class="check-detail">Qiyamul Lail</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Witir -->
+            <div class="check-item-card" data-key="witir" data-cat="sunnah">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Witir</span>
+                  <span class="check-detail">Penutup Malam</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3: IBADAH LAIN -->
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">🌿</span>
+              <div>
+                <h3 class="section-title">Ibadah & Amalan Lain</h3>
+                <p class="section-subtitle">Kebiasaan baik menjaga kesucian rohani</p>
+              </div>
+            </div>
+            <span class="section-counter" id="badge-lain">0/4</span>
+          </div>
+
+          <div class="checklist-grid grid-2">
+            <!-- Wudhu -->
+            <div class="check-item-card" data-key="wudhu" data-cat="lain">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Menjaga Wudhu</span>
+                  <span class="check-detail">Sebelum tidur / dawam</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sedekah -->
+            <div class="check-item-card" data-key="sedekah" data-cat="lain">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Sedekah Subuh</span>
+                  <span class="check-detail">Kebaikan & infaq</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dzikir Pagi -->
+            <div class="check-item-card" data-key="dzikirPagi" data-cat="lain">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Dzikir Pagi</span>
+                  <span class="check-detail">Al-Ma'tsurat / doa pagi</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dzikir Petang -->
+            <div class="check-item-card" data-key="dzikirPetang" data-cat="lain">
+              <div class="check-left">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="check-text">
+                  <span class="check-name">Dzikir Petang</span>
+                  <span class="check-detail">Doa perlindungan petang</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 4: AL-QUR'AN (TADARUS, HAFALAN, TADABBUR) -->
+        <section class="section-card quran-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">📖</span>
+              <div>
+                <h3 class="section-title">Al-Qur'an Harian</h3>
+                <p class="section-subtitle">1 'Ain Tadarus, 5 Ayat Hafalan, & Pemahaman</p>
+              </div>
+            </div>
+            <span class="section-counter" id="badge-quran">0/3</span>
+          </div>
+
+          <div class="quran-modules">
+            <!-- 1. Tadarus 1 'ain -->
+            <div class="quran-module-item">
+              <div class="quran-check-header" data-key="tadarusDone">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="quran-title-info">
+                  <span class="quran-label">Tadarus Al-Qur'an</span>
+                  <span class="target-tag">Target: 1 'Ain / Hari</span>
+                </div>
+              </div>
+              <div class="quran-inputs-row">
+                <div class="input-field-group">
+                  <label for="quran-tadarus-surah">Nama Surah</label>
+                  <input type="text" id="quran-tadarus-surah" placeholder="Contoh: Al-Baqarah" list="surah-list">
+                </div>
+                <div class="input-field-group input-narrow">
+                  <label for="quran-tadarus-ain">'Ain / Ruku' ke-</label>
+                  <input type="number" id="quran-tadarus-ain" min="1" placeholder="1">
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Hafalan 5 ayat -->
+            <div class="quran-module-item">
+              <div class="quran-check-header" data-key="hafalanDone">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="quran-title-info">
+                  <span class="quran-label">Hafalan Baru / Muroja'ah</span>
+                  <span class="target-tag">Target: 5 Ayat / Hari</span>
+                </div>
+              </div>
+              <div class="quran-inputs-row">
+                <div class="input-field-group">
+                  <label for="quran-hafalan-surah">Surah Dihafal</label>
+                  <input type="text" id="quran-hafalan-surah" placeholder="Contoh: An-Naba" list="surah-list">
+                </div>
+                <div class="input-field-group input-narrow">
+                  <label for="quran-hafalan-ayat">Ayat</label>
+                  <input type="text" id="quran-hafalan-ayat" placeholder="1-5">
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Pahami arti & Tadabbur -->
+            <div class="quran-module-item">
+              <div class="quran-check-header" data-key="tadabburDone">
+                <div class="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="quran-title-info">
+                  <span class="quran-label">Pahami Arti & Tadabbur</span>
+                  <span class="target-tag highlight">Pelajaran Utama</span>
+                </div>
+              </div>
+              <div class="tadabbur-box">
+                <textarea id="quran-tadabbur-text" rows="3" placeholder="Tuliskan hikmah, arti, atau pelajaran utama yang kamu peroleh dari ayat yang dibaca/dihafal hari ini..."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5: JURNAL & REFLEKSI HARIAN -->
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">📝</span>
+              <div>
+                <h3 class="section-title">Jurnal & Refleksi Harian</h3>
+                <p class="section-subtitle">Muhasabah diri dan perbaiki niat</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spiritual Mood Selector -->
+          <div class="mood-selector-container">
+            <label class="input-label-sm">Kondisi Hati Hari Ini:</label>
+            <div class="mood-chips">
+              <button type="button" class="mood-chip" data-mood="bersyukur">
+                <span class="mood-emoji">🤲</span>
+                <span>Bersyukur</span>
+              </button>
+              <button type="button" class="mood-chip" data-mood="tenang">
+                <span class="mood-emoji">🌿</span>
+                <span>Tenang</span>
+              </button>
+              <button type="button" class="mood-chip" data-mood="semangat">
+                <span class="mood-emoji">⚡</span>
+                <span>Semangat</span>
+              </button>
+              <button type="button" class="mood-chip" data-mood="butuh-doa">
+                <span class="mood-emoji">💧</span>
+                <span>Butuh Doa</span>
+              </button>
+              <button type="button" class="mood-chip" data-mood="muhasabah">
+                <span class="mood-emoji">🌙</span>
+                <span>Muhasabah</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Catatan / Refleksi -->
+          <div class="journal-field-group">
+            <label for="journal-notes" class="journal-field-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <span>Catatan & Refleksi Ibadah Hari Ini:</span>
+            </label>
+            <textarea id="journal-notes" rows="4" placeholder="Apa saja nikmat Allah hari ini yang kamu rasakan? Apakah ada ibadah yang terlewat atau ingin diperbaiki?"></textarea>
+          </div>
+
+          <!-- Target & Niat Esok -->
+          <div class="journal-field-group">
+            <label for="journal-target-besok" class="journal-field-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 12 8"></polygon></svg>
+              <span>Target & Niat Ibadah untuk Besok:</span>
+            </label>
+            <textarea id="journal-target-besok" rows="2" placeholder="Contoh: Sholat subuh di masjid, selesaikan tadarus surat Al-Kahfi, bangun sholat Tahajud..."></textarea>
+          </div>
+        </section>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-bar-bottom">
+          <button id="btn-save-journal" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            <span>Simpan Jurnal</span>
+          </button>
+          <button id="btn-share-wa" class="btn-secondary" title="Kirim ringkasan ibadah ke WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            <span>Bagikan</span>
+          </button>
+        </div>
+
+        <div id="save-status-toast" class="toast-notice">
+          <span>✓ Tersimpan otomatis ke memori HP</span>
+        </div>
+
+      </main>
+
+      <!-- TAB 2: AL-QUR'AN & TERJEMAHAN PER AYAT -->
+      <section id="tab-quran" class="tab-content">
+        
+        <!-- View 1: Katalog 114 Surah -->
+        <div id="quran-catalog-view" class="quran-subview">
+          <div class="quran-banner-hero">
+            <div class="quran-banner-info">
+              <span class="quran-badge-tag">Kemenag RI &bull; 114 Surah</span>
+              <h2 class="quran-banner-title">Al-Qur'an & Terjemahan</h2>
+              <p class="quran-banner-desc">Baca per ayat beserta artinya, dengarkan murottal, dan hubungkan langsung ke target hafalan atau tadabbur hari ini.</p>
+            </div>
+            <div class="quran-banner-art">📖</div>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div class="quran-search-card">
+            <div class="quran-search-input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="quran-search-surah" placeholder="Cari nama surat (Al-Mulk, Yasin...), nomor, atau arti...">
+            </div>
+            
+            <div class="quran-filter-chips">
+              <button type="button" class="qfilter-chip active" data-filter="all">Semua (114)</button>
+              <button type="button" class="qfilter-chip" data-filter="pilihan">Pilihan</button>
+              <button type="button" class="qfilter-chip" data-filter="juz30">Juz 30</button>
+              <button type="button" class="qfilter-chip" data-filter="makkiyyah">Makkiyyah</button>
+              <button type="button" class="qfilter-chip" data-filter="madaniyyah">Madaniyyah</button>
+            </div>
+          </div>
+
+          <!-- Surah Cards Grid Container -->
+          <div class="surah-cards-grid" id="surah-cards-list">
+            <!-- Dynamically populated from ALL_SURAHS -->
+          </div>
+        </div>
+
+        <!-- View 2: Reader Detail Surah & Ayat -->
+        <div id="quran-reader-view" class="quran-subview hidden">
+          <!-- Reader Header Toolbar -->
+          <div class="reader-top-bar">
+            <button id="btn-back-to-surahs" class="btn-back-arrow" title="Kembali ke Daftar Surah">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <span>Daftar Surah</span>
+            </button>
+            <div class="reader-surah-arrows">
+              <button id="btn-prev-surah" class="nav-arrow" title="Surah Sebelumnya">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button id="btn-next-surah" class="nav-arrow" title="Surah Berikutnya">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Surah Detail Card Info -->
+          <div class="surah-header-card">
+            <div class="surah-header-meta">
+              <span class="surah-number-pill" id="reader-surah-num">Surah ke-1</span>
+              <h2 class="surah-header-name" id="reader-surah-latin">Al-Fatihah</h2>
+              <p class="surah-header-desc" id="reader-surah-desc">Pembukaan &bull; 7 Ayat &bull; Makkiyyah</p>
+            </div>
+            <div class="surah-header-arabic" id="reader-surah-arabic">الفاتحة</div>
+          </div>
+
+          <!-- Audio & Reader Settings Toolbar -->
+          <div class="reader-settings-toolbar">
+            <div class="reader-font-controls">
+              <span class="setting-title-sm">Ukuran Font:</span>
+              <button id="btn-font-smaller" class="font-btn" title="Kecilkan Font">A-</button>
+              <button id="btn-font-larger" class="font-btn" title="Besarkan Font">A+</button>
+            </div>
+            <div class="reader-toggles">
+              <label class="toggle-pill">
+                <input type="checkbox" id="toggle-latin" checked>
+                <span>Latin</span>
+              </label>
+              <label class="toggle-pill">
+                <input type="checkbox" id="toggle-arti" checked>
+                <span>Arti</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Full Audio Bar -->
+          <div class="surah-audio-card" id="surah-audio-player-box">
+            <div class="audio-left">
+              <button id="btn-play-full-audio" class="audio-play-round" title="Putar Murottal Full Surah">
+                <svg id="icon-audio-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <svg id="icon-audio-pause" class="hidden" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+              </button>
+              <div class="audio-info">
+                <span class="audio-title">Murottal Full Surah</span>
+                <span class="audio-reciter">Qari: Misyari Rasyid Al-Afasy</span>
+              </div>
+            </div>
+            <div class="audio-status-pill" id="audio-status-pill">Audio Siap</div>
+          </div>
+
+          <!-- Bismillah Banner -->
+          <div class="bismillah-banner" id="reader-bismillah-banner">
+            بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
+          </div>
+
+          <!-- Verses Container -->
+          <div class="verses-list" id="surah-verses-container">
+            <!-- Dynamically populated per verse -->
+          </div>
+
+          <!-- Bottom Action: Quick Tadarus Sync to Journal -->
+          <div class="reader-bottom-actions">
+            <button id="btn-mark-tadarus-done" class="btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Tandai Selesai Dibaca Hari Ini (Tadarus)</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB 3: STATISTIK & REKAP -->
+      <section id="tab-stats" class="tab-content">
+        <!-- Streak Card -->
+        <div class="streak-hero-card">
+          <div class="streak-icon-wrap">🔥</div>
+          <div class="streak-hero-details">
+            <div class="streak-big-val"><span id="stats-streak-val">0</span> <small>Hari</small></div>
+            <div class="streak-hero-label">Konsistensi Beruntun (Streak)</div>
+            <p class="streak-quote" id="stats-streak-quote">"Amalan yang paling dicintai Allah adalah yang terus-menerus dikerjakan walau sedikit." (HR. Muslim)</p>
+          </div>
+        </div>
+
+        <!-- 7-Day Completion Bar Chart -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">📊</span>
+              <div>
+                <h3 class="section-title">Pencapaian 7 Hari Terakhir</h3>
+                <p class="section-subtitle">Tingkat kelengkapan ibadah harian</p>
+              </div>
+            </div>
+            <span class="tag-badge" id="stats-weekly-avg">Rata-rata: 0%</span>
+          </div>
+
+          <div class="weekly-chart-bars" id="weekly-chart-container">
+            <!-- Dynamically injected via JS -->
+          </div>
+        </div>
+
+        <!-- Al-Qur'an Total Accumulation Stats -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">📖</span>
+              <div>
+                <h3 class="section-title">Akumulasi Ibadah Al-Qur'an</h3>
+                <p class="section-subtitle">Rekam jejak tilawah & hafalan yang tersimpan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="quran-stats-summary-grid">
+            <div class="quran-stat-box">
+              <span class="quran-stat-num" id="total-ain-read">0</span>
+              <span class="quran-stat-title">'Ain Ditadaruskan</span>
+              <span class="quran-stat-desc">Target 1 'ain/hari</span>
+            </div>
+            <div class="quran-stat-box">
+              <span class="quran-stat-num" id="total-ayat-memorized">0</span>
+              <span class="quran-stat-title">Ayat Dihafal</span>
+              <span class="quran-stat-desc">Target 5 ayat/hari</span>
+            </div>
+            <div class="quran-stat-box">
+              <span class="quran-stat-num" id="total-tadabbur-notes">0</span>
+              <span class="quran-stat-title">Pelajaran Tadabbur</span>
+              <span class="quran-stat-desc">Hikmah yang dipetik</span>
+            </div>
+            <div class="quran-stat-box">
+              <span class="quran-stat-num" id="total-days-logged">0</span>
+              <span class="quran-stat-title">Total Hari Tercatat</span>
+              <span class="quran-stat-desc">Di jurnal ini</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 30-Day Activity Heatmap -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">🗓️</span>
+              <div>
+                <h3 class="section-title">Peta Konsistensi 30 Hari</h3>
+                <p class="section-subtitle">Warna lebih terang menandakan ibadah lebih lengkap</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="heatmap-container" id="monthly-heatmap-grid">
+            <!-- Dynamically populated 30 days grid -->
+          </div>
+
+          <div class="heatmap-legend">
+            <span>Kurang</span>
+            <div class="legend-cell level-0"></div>
+            <div class="legend-cell level-1"></div>
+            <div class="legend-cell level-2"></div>
+            <div class="legend-cell level-3"></div>
+            <div class="legend-cell level-4"></div>
+            <span>100% Sempurna</span>
+          </div>
+        </div>
+
+        <!-- Islamic Daily Quote -->
+        <div class="hadith-card">
+          <div class="hadith-arabic">وَسَارِعُوا إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ عَرْضُهَا السَّمَاوَاتُ وَالْأَرْضُ</div>
+          <p class="hadith-trans">"Dan bersegeralah kamu mencari ampunan dari Rabbmu dan mendapatkan surga yang luasnya seluas langit dan bumi yang disediakan bagi orang-orang yang bertakwa."</p>
+          <span class="hadith-ref">(QS. Ali 'Imran: 133)</span>
+        </div>
+      </section>
+
+      <!-- TAB 3: RIWAYAT JURNAL -->
+      <section id="tab-history" class="tab-content">
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <span class="section-icon">📅</span>
+              <div>
+                <h3 class="section-title">Riwayat Catatan Ibadah</h3>
+                <p class="section-subtitle">Daftar hari yang telah kamu isi</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="history-controls">
+            <input type="text" id="history-search-input" placeholder="Cari catatan, surah, atau hikmah...">
+          </div>
+
+          <div class="history-list" id="history-items-container">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <p>Jurnal Ibadah Harian &copy; 2026 &bull; Dibuat untuk meraih ridho Allah SWT</p>
+        <div class="footer-links">
+          <button id="btn-export-backup" class="footer-link">Cadangkan Data</button>
+          <span>&bull;</span>
+          <button id="btn-import-backup" class="footer-link">Pulihkan Data</button>
+          <span>&bull;</span>
+          <button id="btn-reset-data" class="footer-link danger">Reset Data</button>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Settings & Backup Modal -->
+  <div id="modal-settings" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Pengaturan & Cadangan</h3>
+        <button class="btn-close-modal" id="btn-close-settings">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-group">
+          <label class="settings-label">Cadangkan Data (JSON)</label>
+          <p class="settings-desc">Simpan catatan ibadahmu ke dalam file untuk dipindahkan ke HP atau perangkat lain.</p>
+          <button id="btn-download-json" class="btn-secondary full-width">Unduh File Cadangan</button>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label">Pulihkan Data dari Cadangan</label>
+          <p class="settings-desc">Pilih file JSON cadangan yang pernah kamu simpan.</p>
+          <input type="file" id="import-file-input" accept=".json" class="hidden">
+          <button id="btn-trigger-import" class="btn-secondary full-width">Pilih File Cadangan</button>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label">Contoh Data Awal (Demo)</label>
+          <p class="settings-desc">Isi beberapa riwayat hari sebelumnya agar grafik statistik langsung terlihat menarik.</p>
+          <button id="btn-load-sample" class="btn-secondary full-width">Muat Data Sampel</button>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label">Akun & Pengguna</label>
+          <p class="settings-desc">Daftarkan pengguna baru atau beralih akun untuk mencatat jurnal ibadah masing-masing.</p>
+          <button id="btn-settings-manage-users" class="btn-secondary full-width">Buka Manajemen Pengguna</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal User Manager (Login & Manajemen Pengguna) -->
+  <div id="modal-user-manager" class="modal-backdrop hidden">
+    <div class="modal-card user-modal-card">
+      <div class="modal-header">
+        <div class="user-modal-header-info">
+          <div class="user-header-icon-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div>
+            <h3 class="modal-title">Akun & Pengguna</h3>
+            <p class="modal-subtitle">Kelola login dan data masing-masing pengguna</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-user-modal">&times;</button>
+      </div>
+
+      <div class="modal-body user-modal-body">
+        <!-- Active User Status Card (when logged in) -->
+        <div id="active-user-banner" class="active-user-banner hidden">
+          <div class="active-user-info">
+            <div class="active-user-avatar" id="banner-user-avatar">A</div>
+            <div class="active-user-details">
+              <div class="active-badge-tag-row">
+                <div class="active-badge-tag">● Sedang Aktif</div>
+                <div id="banner-user-role-badge" class="user-role-badge">👤 Pengguna</div>
+              </div>
+              <h4 id="banner-user-name" class="banner-user-name">Nama Pengguna</h4>
+              <p id="banner-user-email" class="banner-user-email">email@gmail.com</p>
+            </div>
+          </div>
+          <button id="btn-logout-user" class="btn-logout-mini" title="Keluar dari akun ini">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Keluar</span>
+          </button>
+        </div>
+
+        <!-- Form Tambah / Daftar Pengguna Baru -->
+        <div class="user-form-card">
+          <div class="user-form-title-row">
+            <h4 class="user-section-title">✨ Tambah Pengguna Baru</h4>
+            <span class="user-form-hint">Data tersimpan di database</span>
+          </div>
+          <form id="form-create-user" class="form-create-user">
+            <div class="form-group-user">
+              <label for="input-user-name" class="user-input-label">Nama Lengkap</label>
+              <div class="input-user-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <input type="text" id="input-user-name" class="user-text-input" placeholder="Masukkan nama (contoh: Muhammad Farhan)" required>
+              </div>
+            </div>
+
+            <div class="form-group-user">
+              <label for="input-user-email" class="user-input-label">Email Google</label>
+              <div class="input-user-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <input type="email" id="input-user-email" class="user-text-input" placeholder="contoh: farhan@gmail.com" required>
+              </div>
+            </div>
+
+            <div class="form-group-user">
+              <label for="input-user-password" class="user-input-label">Password Akun (Privasi)</label>
+              <div class="input-user-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <input type="password" id="input-user-password" class="user-text-input" placeholder="Buat password (min. 4 karakter)" required minlength="4" autocomplete="new-password">
+                <button type="button" class="btn-toggle-pw" id="btn-toggle-create-pw" title="Lihat/Sembunyikan Password">
+                  <svg class="icon-eye-show" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="icon-eye-hide hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+              <span class="user-pw-hint">🔒 Password digunakan untuk mengunci & melindungi privasi catatan ibadahmu.</span>
+            </div>
+
+            <button type="submit" class="btn-primary full-width" id="btn-submit-user">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              <span>Simpan & Masuk Pengguna</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Daftar Pengguna Terdaftar di Database -->
+        <div class="registered-users-section">
+          <div class="registered-header-row">
+            <h4 class="user-section-title">👥 Pengguna Terdaftar di Database</h4>
+            <span id="registered-users-count" class="registered-count-badge">0 Pengguna</span>
+          </div>
+
+          <div id="registered-users-list" class="registered-users-list">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <div id="no-users-notice" class="no-users-notice hidden">
+            <p>Belum ada pengguna terdaftar. Silakan daftarkan nama dan email Google Anda di atas.</p>
+          </div>
+        </div>
+
+        <div class="user-privacy-note">
+          <span class="user-note-icon">🛡️</span>
+          <span>Setiap akun dilindungi password terenkripsi. Catatan sholat, hafalan, dan refleksi pribadi terjaga keamanannya.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Password Prompt (Verifikasi Password Akun) -->
+  <div id="modal-password-prompt" class="modal-backdrop hidden">
+    <div class="modal-card password-modal-card">
+      <div class="modal-header">
+        <div class="user-modal-header-info">
+          <div class="lock-header-icon-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="modal-title">Buka Akun Terlindungi</h3>
+            <p class="modal-subtitle">Masukkan password untuk membuka privasi ibadah</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-pw-prompt">&times;</button>
+      </div>
+
+      <div class="modal-body password-modal-body">
+        <div class="prompt-target-user-card">
+          <div class="prompt-user-avatar" id="prompt-target-avatar">U</div>
+          <div class="prompt-user-details">
+            <h4 id="prompt-target-name" class="prompt-user-name">Nama Pengguna</h4>
+            <p id="prompt-target-email" class="prompt-user-email">email@gmail.com</p>
+          </div>
+        </div>
+
+        <form id="form-verify-password" class="form-verify-password">
+          <div class="form-group-user">
+            <label for="input-verify-password" class="user-input-label">Password Akun</label>
+            <div class="input-user-wrap">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="input-verify-password" class="user-text-input" placeholder="Ketik password akun ini" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-pw" id="btn-toggle-verify-pw" title="Lihat/Sembunyikan Password">
+                <svg class="icon-eye-show" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="icon-eye-hide hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </button>
+            </div>
+            <p id="prompt-pw-error" class="prompt-pw-error hidden">❌ Password salah. Silakan coba lagi.</p>
+          </div>
+
+          <div class="prompt-actions-row">
+            <button type="button" class="btn-secondary" id="btn-cancel-pw-prompt">Batal</button>
+            <button type="submit" class="btn-primary" id="btn-submit-verify-pw">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Buka Jurnal</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Panduan Google Spreadsheet Setup -->
+  <div id="modal-gsheet-guide" class="modal-backdrop hidden">
+    <div class="modal-card guide-modal-card">
+      <div class="modal-header">
+        <div class="user-modal-header-info">
+          <div class="user-header-icon-wrap" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald-light);">
+            📊
+          </div>
+          <div>
+            <h3 class="modal-title">Panduan Database Google Spreadsheet</h3>
+            <p class="modal-subtitle">5 langkah mudah menghubungkan database cloud gratis</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-gsheet-guide">&times;</button>
+      </div>
+
+      <div class="modal-body guide-modal-body">
+        <div class="guide-step-item">
+          <div class="guide-step-num">1</div>
+          <div class="guide-step-content">
+            <strong>Buat Google Spreadsheet Baru</strong>
+            <span>Buka <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a> di browser Anda, lalu beri judul spreadsheet misalnya <em>Jurnal Ibadah AMWA - Database</em>.</span>
+          </div>
+        </div>
+
+        <div class="guide-step-item">
+          <div class="guide-step-num">2</div>
+          <div class="guide-step-content">
+            <strong>Buka Editor Apps Script</strong>
+            <span>Di menu atas Google Sheets, klik menu <strong>Ekstensi (Extensions)</strong> &gt; <strong>Apps Script</strong>.</span>
+          </div>
+        </div>
+
+        <div class="guide-step-item">
+          <div class="guide-step-num">3</div>
+          <div class="guide-step-content">
+            <strong>Tempel Kode Google Apps Script</strong>
+            <span>Hapus semua isi bawaan di editor Apps Script, lalu salin seluruh kode dari file <code>google-apps-script.js</code>.</span>
+            <div class="guide-code-box">
+              <span class="guide-code-text">google-apps-script.js (Tersedia di folder aplikasi)</span>
+              <button type="button" id="btn-copy-apps-script" class="btn-copy-code">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Salin Kode</span>
+              </button>
+            </div>
+            <span>Setelah ditempel, simpan dengan menekan <strong>Ctrl + S</strong>.</span>
+          </div>
+        </div>
+
+        <div class="guide-step-item">
+          <div class="guide-step-num">4</div>
+          <div class="guide-step-content">
+            <strong>Deploy Sebagai Web App</strong>
+            <span>Klik tombol biru <strong>Deploy (Terapkan)</strong> &gt; <strong>New deployment</strong>. Pilih tipe <strong>Web app</strong>:</span>
+            <ul style="margin: 4px 0 0 16px; padding: 0;">
+              <li>Execute as: <strong>Me (email Anda)</strong></li>
+              <li>Who has access: <strong>Anyone (Siapa saja)</strong></li>
+            </ul>
+            <span>Klik <strong>Deploy</strong>, lakukan otorisasi (Authorize access), lalu salin <strong>Web App URL</strong> yang berakhiran <code>/exec</code>.</span>
+          </div>
+        </div>
+
+        <div class="guide-step-item">
+          <div class="guide-step-num">5</div>
+          <div class="guide-step-content">
+            <strong>Tempel & Simpan di Aplikasi</strong>
+            <span>Tempelkan Web App URL tersebut ke kolom <strong>URL Web App</strong> di menu Akun aplikasi ini, lalu klik <strong>Simpan & Hubungkan</strong>. Data akun dan catatan ibadah Anda otomatis tersinkronisasi ke Google Sheets!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Admin Panel (Super User AMWA) -->
+  <div id="modal-admin-panel" class="modal-backdrop hidden">
+    <div class="modal-card user-modal-card admin-modal-card">
+      <div class="modal-header">
+        <div class="user-modal-header-info">
+          <div class="user-header-icon-wrap" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: var(--accent-gold-light);">
+            👑
+          </div>
+          <div>
+            <h3 class="modal-title">Panel Super User (Admin AMWA)</h3>
+            <p class="modal-subtitle">Pengaturan Database Cloud &amp; Manajemen Pengguna</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-admin-panel">&times;</button>
+      </div>
+
+      <div class="modal-body user-modal-body">
+        <!-- Database Backend Status Indicator -->
+        <div id="admin-db-status-pill" class="db-backend-status-pill" title="Klik untuk menguji koneksi Google Spreadsheet">
+          <span class="db-status-dot"></span>
+          <span id="admin-db-status-text">Memeriksa Database Google Spreadsheet...</span>
+        </div>
+
+        <div class="admin-authenticated-notice">
+          <span class="admin-crown-icon">🛡️</span>
+          <span>Akses Super User aktif. Anda dapat mengatur database cloud Google Spreadsheet dan mengelola seluruh akun pengguna.</span>
+        </div>
+
+        <!-- Google Spreadsheet Database Configuration -->
+        <div class="gsheet-config-card" id="gsheet-config-card">
+          <div class="gsheet-config-header">
+            <div class="gsheet-header-left">
+              <span class="gsheet-icon">📊</span>
+              <div>
+                <div class="gsheet-title-badge-row">
+                  <h4 class="gsheet-config-title">Google Spreadsheet (Database Cloud)</h4>
+                  <span class="gsheet-admin-badge unlocked">🟢 Cloud Sync</span>
+                </div>
+                <p class="gsheet-config-subtitle">Hubungkan Web App Google Apps Script sebagai database terpusat</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="gsheet-panel-body" style="display:block; padding-top:10px;">
+            <div class="form-group-user">
+              <label for="input-gsheet-url" class="user-input-label">URL Web App Google Apps Script</label>
+              <div class="input-user-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <input type="url" id="input-gsheet-url" class="user-text-input" placeholder="https://script.google.com/macros/s/.../exec">
+              </div>
+              <span class="user-pw-hint">💡 Salin Web App URL dari penerapan Apps Script di Google Spreadsheet Anda.</span>
+            </div>
+
+            <div class="gsheet-actions-row">
+              <button type="button" id="btn-save-gsheet-url" class="btn-primary btn-sm">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Simpan &amp; Hubungkan</span>
+              </button>
+              <button type="button" id="btn-open-gsheet-guide" class="btn-secondary btn-sm">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span>Panduan Setup (3 Menit)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manajemen Seluruh Pengguna -->
+        <div class="users-list-card">
+          <div class="users-list-header">
+            <h4 class="user-section-title">👥 Manajemen Akun Sistem</h4>
+            <span id="admin-registered-users-count" class="badge-users-count">0 Pengguna</span>
+          </div>
+
+          <div id="admin-registered-users-list" class="registered-users-list">
+            <!-- Rendered by JS with delete action -->
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; padding-top:6px;">
+          <button type="button" id="btn-lock-admin-panel" class="btn-secondary btn-sm" style="color:var(--accent-gold-light); border-color: rgba(245, 158, 11, 0.35);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Kunci &amp; Keluar Mode Admin</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Autentikasi Super User (Admin) -->
+  <div id="modal-admin-auth" class="modal-backdrop hidden">
+    <div class="modal-card password-modal-card">
+      <div class="modal-header">
+        <div class="user-modal-header-info">
+          <div class="user-header-icon-wrap" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: var(--accent-gold-light);">
+            👑
+          </div>
+          <div>
+            <h3 class="modal-title">Autentikasi Super User</h3>
+            <p class="modal-subtitle">Akses Khusus Administrator AMWA</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-admin-auth">&times;</button>
+      </div>
+
+      <div class="modal-body password-modal-body">
+        <div class="admin-auth-info-box">
+          <span style="font-size: 1.2rem;">🛡️</span>
+          <p style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.4;">
+            Panel Administrator AMWA dilindungi hak akses khusus. Masukkan password akun Super User atau PIN Master (<code>admin123</code> / <code>amwa2026</code>) untuk membuka panel admin.
+          </p>
+        </div>
+
+        <form id="form-admin-auth" class="form-verify-password">
+          <div class="form-group-user">
+            <label for="input-admin-password" class="user-input-label">Password Super User / PIN Admin</label>
+            <div class="input-user-wrap">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="input-admin-password" class="user-text-input" placeholder="Masukkan password super user" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-pw" id="btn-toggle-admin-pw" title="Lihat/Sembunyikan Password">
+                <svg class="icon-eye-show" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="icon-eye-hide hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </button>
+            </div>
+            <p id="admin-auth-error" class="prompt-pw-error hidden">❌ Password/PIN Admin salah.</p>
+          </div>
+
+          <div class="prompt-actions-row">
+            <button type="button" class="btn-secondary" id="btn-cancel-admin-auth">Batal</button>
+            <button type="submit" class="btn-primary" id="btn-submit-admin-auth">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Verifikasi Super User</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Surah Datalist for Autocomplete -->
+  <datalist id="surah-list">
+    <option value="Al-Fatihah">
+    <option value="Al-Baqarah">
+    <option value="Ali 'Imran">
+    <option value="An-Nisa'">
+    <option value="Al-Ma'idah">
+    <option value="Al-An'am">
+    <option value="Al-A'raf">
+    <option value="Al-Anfal">
+    <option value="At-Taubah">
+    <option value="Yunus">
+    <option value="Hud">
+    <option value="Yusuf">
+    <option value="Ar-Ra'd">
+    <option value="Ibrahim">
+    <option value="Al-Hijr">
+    <option value="An-Nahl">
+    <option value="Al-Isra'">
+    <option value="Al-Kahf">
+    <option value="Maryam">
+    <option value="Ta-Ha">
+    <option value="Al-Anbiya">
+    <option value="Al-Hajj">
+    <option value="Al-Mu'minun">
+    <option value="An-Nur">
+    <option value="Al-Furqan">
+    <option value="Asy-Syu'ara">
+    <option value="An-Naml">
+    <option value="Al-Qashash">
+    <option value="Al-'Ankabut">
+    <option value="Ar-Rum">
+    <option value="Luqman">
+    <option value="As-Sajdah">
+    <option value="Al-Ahzab">
+    <option value="Saba'">
+    <option value="Fathir">
+    <option value="Ya-Sin">
+    <option value="Ash-Shaffat">
+    <option value="Shad">
+    <option value="Az-Zumar">
+    <option value="Ghafir">
+    <option value="Fushshilat">
+    <option value="Asy-Syura">
+    <option value="Az-Zukhruf">
+    <option value="Ad-Dukhan">
+    <option value="Al-Jatsiyah">
+    <option value="Al-Ahqaf">
+    <option value="Muhammad">
+    <option value="Al-Fath">
+    <option value="Al-Hujurat">
+    <option value="Qaf">
+    <option value="Adz-Dzariyat">
+    <option value="Ath-Thur">
+    <option value="An-Najm">
+    <option value="Al-Qamar">
+    <option value="Ar-Rahman">
+    <option value="Al-Waqi'ah">
+    <option value="Al-Hadid">
+    <option value="Al-Mujadilah">
+    <option value="Al-Hasyr">
+    <option value="Al-Mumtahanah">
+    <option value="Ash-Shaff">
+    <option value="Al-Jumu'ah">
+    <option value="Al-Munafiqun">
+    <option value="At-Taghabun">
+    <option value="Ath-Thalaq">
+    <option value="At-Tahrim">
+    <option value="Al-Mulk">
+    <option value="Al-Qalam">
+    <option value="Al-Haqqah">
+    <option value="Al-Ma'arij">
+    <option value="Nuh">
+    <option value="Al-Jinn">
+    <option value="Al-Muzzammil">
+    <option value="Al-Muddatstsir">
+    <option value="Al-Qiyamah">
+    <option value="Al-Insan">
+    <option value="Al-Mursalat">
+    <option value="An-Naba">
+    <option value="An-Nazi'at">
+    <option value="'Abasa">
+    <option value="At-Takwir">
+    <option value="Al-Infithar">
+    <option value="Al-Muthaffifin">
+    <option value="Al-Insyiqaq">
+    <option value="Al-Buruj">
+    <option value="Ath-Thariq">
+    <option value="Al-A'la">
+    <option value="Al-Ghasyiyah">
+    <option value="Al-Fajr">
+    <option value="Al-Balad">
+    <option value="Asy-Syams">
+    <option value="Al-Lail">
+    <option value="Adh-Dhuha">
+    <option value="Asy-Syarh">
+    <option value="At-Tin">
+    <option value="Al-'Alaq">
+    <option value="Al-Qadr">
+    <option value="Al-Bayyinah">
+    <option value="Az-Zalzalah">
+    <option value="Al-'Adiyat">
+    <option value="Al-Qari'ah">
+    <option value="At-Takatsur">
+    <option value="Al-'Ashr">
+    <option value="Al-Humazah">
+    <option value="Al-Fil">
+    <option value="Quraisy">
+    <option value="Al-Ma'un">
+    <option value="Al-Kautsar">
+    <option value="Al-Kafirun">
+    <option value="An-Nashr">
+    <option value="Al-Lahab">
+    <option value="Al-Ikhlas">
+    <option value="Al-Falaq">
+    <option value="An-Nas">
+  </datalist>
+
+  <script src="quran-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

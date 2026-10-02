@@ -154,11 +154,11 @@ body {
 }
 
 .brand-icon {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-md);
-  background: #ffffff;
-  padding: 3px 4px;
+  background: #fffbf0;
+  padding: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3129,6 +3129,784 @@ body {
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   5-Level Worship Progression System (Tingkatan Ibadah)
+   ========================================================================== */
+
+/* Daily Level Rank Pill in Progress Hero */
+.daily-level-rank-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 4px 10px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-gold-light);
+  width: fit-content;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.1);
+  transition: all var(--transition-normal);
+}
+
+.daily-level-rank-pill .rank-star {
+  font-size: 0.85rem;
+}
+
+/* Quick Mini Stats Level Cards */
+.level-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.level-stat-card {
+  cursor: pointer;
+  position: relative;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  padding: 8px 4px;
+}
+
+.level-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-emerald-light);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.mini-stat-level-tag {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+/* Level Stepper Container */
+.level-stepper-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 14px;
+  border-top: 2px solid var(--accent-gold);
+}
+
+.level-stepper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.level-stepper-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepper-star {
+  font-size: 1.25rem;
+  background: rgba(245, 158, 11, 0.15);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.level-stepper-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.level-stepper-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.btn-level-view-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-level-view-mode:hover {
+  color: var(--text-main);
+  border-color: var(--accent-emerald-light);
+  background: var(--bg-elevated);
+}
+
+/* Stepper Track */
+.level-steps-track {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle) transparent;
+}
+
+.level-steps-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.level-steps-track::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+
+/* Step Card Button */
+.level-step-card {
+  flex: 1 0 110px;
+  min-width: 105px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  position: relative;
+  color: var(--text-main);
+}
+
+.level-step-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+}
+
+.level-step-card.active {
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.12), rgba(245, 158, 11, 0.08));
+  border-color: var(--accent-gold);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+}
+
+.level-step-card.completed {
+  border-color: rgba(16, 185, 129, 0.6);
+}
+
+.step-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.level-step-card.active .step-badge {
+  background: var(--accent-gold);
+  color: #06130e;
+  border-color: var(--accent-gold-light);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+
+.level-step-card.completed .step-badge {
+  background: var(--accent-emerald);
+  color: #ffffff;
+  border-color: var(--accent-emerald-light);
+}
+
+.step-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-tag {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--accent-gold);
+}
+
+.step-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.step-status-indicator {
+  font-size: 0.64rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+  margin-top: 2px;
+}
+
+.level-step-card.completed .step-status-indicator {
+  background: rgba(16, 185, 129, 0.18);
+  color: var(--accent-emerald-light);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Level Panels (Step-by-step display vs All display) */
+.level-panel {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.level-panel.active {
+  display: flex;
+  animation: levelFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mode All Levels (when toggled to show all levels simultaneously) */
+.show-all-levels .level-panel {
+  display: flex !important;
+  margin-bottom: 14px;
+}
+
+@keyframes levelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Level Headers & Highlight Badges */
+.level-card-highlight {
+  border-left: 3px solid var(--accent-emerald);
+}
+
+.level-number-pill {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: var(--accent-emerald-light);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.level-number-pill.gold {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: var(--accent-gold-light);
+}
+
+.level-hadith-pill {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px dashed rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.level-hadith-pill.gold {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.hadith-star {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* Level Nav Footer */
+.level-nav-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 14px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.level-progress-hint {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.btn-level-prev, .btn-level-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-level-prev {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.btn-level-prev:hover {
+  background: var(--bg-elevated);
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-level-next {
+  background: linear-gradient(135deg, var(--accent-emerald), #059669);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #ffffff;
+  margin-left: auto;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.btn-level-next:hover {
+  filter: brightness(1.1);
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-level-next.finish-btn {
+  background: linear-gradient(135deg, var(--accent-gold), #d97706);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.btn-level-next.finish-btn:hover {
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+}
+
+.btn-level-prev svg, .btn-level-next svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ==========================================================================
+   Level 4 : Shaum Sunnah Specific Styles
+   ========================================================================== */
+.shaum-smart-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(16, 185, 129, 0.1));
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  animation: pulseSubtle 3s infinite ease-in-out;
+}
+
+@keyframes pulseSubtle {
+  0%, 100% { border-color: rgba(245, 158, 11, 0.35); }
+  50% { border-color: rgba(245, 158, 11, 0.65); box-shadow: 0 0 14px rgba(245, 158, 11, 0.15); }
+}
+
+.shaum-banner-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.shaum-banner-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.shaum-banner-text strong {
+  font-size: 0.85rem;
+  color: var(--accent-gold-light);
+}
+
+.shaum-banner-text span {
+  font-size: 0.72rem;
+  color: var(--text-main);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+.shaum-status-card {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.shaum-status-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.shaum-status-card.checked {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: var(--accent-gold);
+}
+
+.shaum-check-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shaum-main-checkbox {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 2px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.shaum-status-card.checked .shaum-main-checkbox {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+}
+
+.shaum-status-card.checked .shaum-main-checkbox svg {
+  stroke-dashoffset: 0 !important;
+}
+
+.shaum-text-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.shaum-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.shaum-desc {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.shaum-badge-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.shaum-status-card.checked .shaum-badge-pill {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-gold-light);
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+/* Shaum Type Chips */
+.shaum-type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.shaum-chip {
+  padding: 6px 12px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.shaum-chip:hover {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.shaum-chip.active {
+  background: rgba(245, 158, 11, 0.16);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold-light);
+  font-weight: 700;
+}
+
+/* Shaum Doa & Niat Box */
+.shaum-doa-box {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.shaum-doa-header {
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  transition: background var(--transition-fast);
+}
+
+.shaum-doa-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.doa-arrow {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  transition: transform var(--transition-fast);
+}
+
+.shaum-doa-body {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doa-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+}
+
+.doa-arabic {
+  font-family: var(--font-arabic);
+  font-size: 1.15rem;
+  color: var(--text-main);
+  direction: rtl;
+  text-align: right;
+  line-height: 1.8;
+  margin: 4px 0;
+}
+
+.doa-latin {
+  font-size: 0.74rem;
+  color: var(--accent-emerald-light);
+  font-style: italic;
+  margin-bottom: 2px;
+}
+
+.doa-arti {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   Level 5 : Hafalan Quran Per Ayat Specific Styles
+   ========================================================================== */
+.hafalan-per-ayat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.custom-select-input {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.custom-select-input:focus {
+  border-color: var(--border-focus);
+}
+
+.custom-select-input option {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.hafalan-range-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.btn-build-verses {
+  padding: 9px 14px;
+  background: var(--bg-card-subtle);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: var(--radius-md);
+  color: var(--accent-gold-light);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-build-verses:hover {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--accent-gold);
+  transform: translateY(-1px);
+}
+
+.hafalan-verse-tracker-box {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tracker-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.tracker-hint {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+.verse-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.empty-tracker-notice {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  padding: 8px 4px;
+  line-height: 1.4;
+}
+
+.verse-chip {
+  padding: 7px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.verse-chip:hover {
+  border-color: var(--accent-gold);
+  transform: translateY(-1px);
+}
+
+.verse-chip.memorized {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold-light);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.18);
+}
+
+.verse-chip .chip-check {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.verse-chip.memorized .chip-check {
+  color: var(--accent-gold);
+}
+
+.btn-inline-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--accent-emerald-light);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color var(--transition-fast);
+}
+
+.btn-inline-action:hover {
+  color: var(--accent-gold-light);
+  text-decoration: underline;
+}
+
+.btn-inline-action svg {
+  width: 14px;
+  height: 14px;
+}
+
+.quran-quick-read-actions, .hafalan-audio-helpers {
+  margin-top: 4px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 420px) {
   .app-container {
@@ -3141,7 +3919,13 @@ body {
     grid-column: span 1;
   }
   .quran-inputs-row {
-    grid-template-columns: 1fr 80px;
+    grid-template-columns: 1fr;
+  }
+  .hafalan-range-inputs {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hafalan-range-inputs .btn-build-verses {
+    grid-column: span 2;
   }
   .auth-btn-label {
     display: none;
@@ -3152,5 +3936,585 @@ body {
   .user-name-text {
     max-width: 60px;
   }
+  .level-mini-stats {
+    gap: 4px;
+  }
+  .level-stat-card {
+    padding: 6px 2px;
+  }
+  .mini-stat-val {
+    font-size: 0.75rem;
+  }
 }
+
+/* ==========================================================================
+   10-DAY SHOLAT WAJIB CONSISTENCY & LEVEL LOCKING SYSTEM
+   ========================================================================== */
+
+/* 1. Tantangan Istiqomah 10 Hari Card */
+.wajib-consistency-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all var(--transition-normal);
+}
+
+.wajib-consistency-card.unlocked-all {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);
+}
+
+.consistency-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.consistency-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.consistency-pill-tag {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: var(--accent-emerald-light);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.consistency-lock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  transition: all var(--transition-fast);
+}
+
+.consistency-lock-status.unlocked {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: var(--accent-emerald-light);
+}
+
+.consistency-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.consistency-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* 2. Visual 10-Day Step Grid */
+.consistency-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  margin: 4px 0;
+}
+
+@media (max-width: 600px) {
+  .consistency-steps-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+}
+
+.consistency-node {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.consistency-node:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-focus);
+}
+
+.consistency-node .node-num {
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.consistency-node .node-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+}
+
+.consistency-node .node-date {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Node States */
+.consistency-node.completed {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.consistency-node.completed .node-num {
+  color: var(--accent-emerald-light);
+}
+
+.consistency-node.completed .node-icon {
+  background: var(--accent-emerald);
+  color: #fff;
+  border-color: var(--accent-emerald-light);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.consistency-node.active-today {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.consistency-node.active-today .node-num {
+  color: var(--accent-gold-light);
+}
+
+.consistency-node.missed {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.consistency-node.missed .node-icon {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* 3. Consistency Progress Bar */
+.consistency-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.consistency-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.consistency-stat-label {
+  color: var(--text-muted);
+}
+
+.consistency-stat-val {
+  font-weight: 800;
+  color: var(--accent-emerald-light);
+}
+
+.consistency-progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-card-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.consistency-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-emerald) 0%, var(--accent-gold) 100%);
+  border-radius: 10px;
+  transition: width 0.4s ease-out;
+}
+
+.consistency-msg-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 0.74rem;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+
+.consistency-msg-box .msg-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* 4. Quick Simulation Controls */
+.consistency-sim-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.btn-sim-action {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: var(--accent-gold-light);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.btn-sim-action:hover {
+  background: rgba(245, 158, 11, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-sim-action.outline {
+  background: transparent;
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.btn-sim-action.outline:hover {
+  border-color: #f87171;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* 5. Stepper Card Locked State */
+.level-step-card.locked {
+  opacity: 0.72;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.level-step-card.locked:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: none;
+}
+
+.level-step-card.locked .step-badge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.level-step-card.locked .step-status-indicator {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+/* 6. Locked Banner inside Level Panels */
+.level-locked-banner {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 36px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  margin-bottom: 24px;
+}
+
+.level-panel.is-locked > section,
+.level-panel.is-locked > .quran-card,
+.level-panel.is-locked > .shaum-card {
+  display: none !important;
+}
+
+.level-panel.is-locked .level-locked-banner {
+  display: flex !important;
+}
+
+.locked-icon-halo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.18);
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+  animation: pulseLock 2.5s infinite;
+}
+
+@keyframes pulseLock {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); box-shadow: 0 0 25px rgba(239, 68, 68, 0.4); }
+}
+
+.locked-badge-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.locked-badge-pill.gold {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-gold-light);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.locked-banner-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.locked-banner-desc {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  max-width: 460px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.locked-progress-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.locked-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.locked-progress-hint {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.locked-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* 7. Footer Next Button Locked State */
+.btn-level-next.locked {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #fca5a5 !important;
+}
+
+.btn-level-next.locked:hover {
+  background: rgba(239, 68, 68, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+/* 8. Modal Locked Card */
+.modal-locked-card {
+  max-width: 460px;
+  text-align: center;
+}
+
+.locked-modal-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.18);
+  border: 2px solid rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin: 0 auto 10px;
+}
+
+.locked-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.locked-modal-desc {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.locked-modal-stats-card {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.locked-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.locked-stat-sub {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+.locked-stat-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.locked-stat-divider {
+  font-size: 1.2rem;
+  color: var(--text-dim);
+}
+
+.locked-quote-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px dashed rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.4;
+  position: relative;
+}
+
+.locked-quote-box .quote-icon {
+  font-size: 1.6rem;
+  line-height: 0;
+  vertical-align: -6px;
+  color: var(--accent-emerald);
+  margin-right: 4px;
+}
+
+.locked-quote-box .quote-by {
+  display: block;
+  font-size: 0.68rem;
+  font-style: normal;
+  color: var(--accent-emerald-light);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* 9. Specialized Level Themes & Node Grids */
+.sunnah-card {
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.quran-consistency-card {
+  border-color: rgba(14, 165, 233, 0.3);
+}
+
+.shaum-consistency-card {
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.shaum-nodes-grid {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+@media (max-width: 600px) {
+  .shaum-nodes-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+.pinnacle-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.pinnacle-card .consistency-lock-status.unlocked {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.5);
+  color: var(--accent-gold-light);
+}
+
+.node-icon.gold-icon {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: var(--accent-gold-light) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+.node-icon.cyan-icon {
+  background: rgba(14, 165, 233, 0.15) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(14, 165, 233, 0.35) !important;
+}
+
+.node-icon.purple-icon {
+  background: rgba(168, 85, 247, 0.15) !important;
+  color: #c084fc !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+}
+
+
 

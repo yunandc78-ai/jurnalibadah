@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="icon" type="image/png" href="logo-amwa.png">
+  <link rel="icon" type="image/jpeg" href="logo-app.jpg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-dark">
@@ -26,12 +26,12 @@
       <header class="app-header">
         <div class="header-top">
           <div class="brand">
-            <div class="brand-icon clickable-admin-trigger" id="brand-logo-amwa" title="Al Muhajirin Wal Anshor (AMWA) - Super User Admin" role="button" tabindex="0">
-              <img src="logo-amwa.png" alt="Logo AMWA - Al Muhajirin Wal Anshor" class="brand-logo-img">
+            <div class="brand-icon clickable-admin-trigger" id="brand-logo-amwa" title="Jurnal Ibadah Muslim - Super User Admin" role="button" tabindex="0">
+              <img src="logo-app.jpg" alt="Logo Jurnal Ibadah Muslim" class="brand-logo-img">
             </div>
             <div>
               <h1 class="brand-title">Jurnal Ibadah</h1>
-              <p class="brand-subtitle">AMWA &bull; Al Muhajirin Wal Anshor</p>
+              <p class="brand-subtitle">Jurnal Ibadah Muslim</p>
             </div>
           </div>
 
@@ -164,556 +164,1223 @@
             <div class="status-badge" id="daily-status-badge">Ayo Mulai Ibadah!</div>
             <h2 class="progress-title" id="progress-hero-headline">Belum Ada Catatan</h2>
             <p class="progress-desc" id="progress-hero-sub">Lengkapi amalan wajib, sunnah, dan Al-Qur'an hari ini.</p>
+            <div class="daily-level-rank-pill" id="daily-level-rank-pill">
+              <span class="rank-star">⭐</span>
+              <span id="daily-level-rank-text">Tingkat Ibadah: Memulai Level 1</span>
+            </div>
           </div>
         </section>
 
-        <!-- Quick Summary Mini Badges -->
-        <div class="quick-stats-row">
-          <div class="mini-stat-card">
+        <!-- Quick Summary Mini Badges (5 Level Amalan) -->
+        <div class="quick-stats-row level-mini-stats">
+          <div class="mini-stat-card level-stat-card" data-jump-level="1" title="Ketuk untuk ke Level 1">
+            <span class="mini-stat-level-tag">Lvl 1</span>
             <span class="mini-stat-label">Wajib</span>
             <span class="mini-stat-val" id="mini-wajib-count">0/5</span>
           </div>
-          <div class="mini-stat-card">
-            <span class="mini-stat-label">Rawatib</span>
-            <span class="mini-stat-val" id="mini-rawatib-count">0/8</span>
-          </div>
-          <div class="mini-stat-card">
+          <div class="mini-stat-card level-stat-card" data-jump-level="2" title="Ketuk untuk ke Level 2">
+            <span class="mini-stat-level-tag">Lvl 2</span>
             <span class="mini-stat-label">Sunnah</span>
-            <span class="mini-stat-val" id="mini-sunnah-count">0/3</span>
+            <span class="mini-stat-val" id="mini-sunnah-count">0/11</span>
           </div>
-          <div class="mini-stat-card">
-            <span class="mini-stat-label">Al-Qur'an</span>
-            <span class="mini-stat-val" id="mini-quran-count">0/3</span>
+          <div class="mini-stat-card level-stat-card" data-jump-level="3" title="Ketuk untuk ke Level 3">
+            <span class="mini-stat-level-tag">Lvl 3</span>
+            <span class="mini-stat-label">Baca Quran</span>
+            <span class="mini-stat-val" id="mini-quran-count">0/1</span>
           </div>
-          <div class="mini-stat-card">
-            <span class="mini-stat-label">Lainnya</span>
-            <span class="mini-stat-val" id="mini-lain-count">0/4</span>
+          <div class="mini-stat-card level-stat-card" data-jump-level="4" title="Ketuk untuk ke Level 4">
+            <span class="mini-stat-level-tag">Lvl 4</span>
+            <span class="mini-stat-label">Shaum</span>
+            <span class="mini-stat-val" id="mini-shaum-count">-</span>
+          </div>
+          <div class="mini-stat-card level-stat-card" data-jump-level="5" title="Ketuk untuk ke Level 5">
+            <span class="mini-stat-level-tag">Lvl 5</span>
+            <span class="mini-stat-label">Hafalan</span>
+            <span class="mini-stat-val" id="mini-hafalan-count">0 Ayat</span>
           </div>
         </div>
 
-        <!-- SECTION 1: SHOLAT WAJIB -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-title-wrap">
-              <span class="section-icon">🕌</span>
+        <!-- LEVEL STEPPER NAVIGATOR -->
+        <div class="level-stepper-container" id="level-stepper-box">
+          <div class="level-stepper-header">
+            <div class="level-stepper-title-wrap">
+              <span class="stepper-star">⭐</span>
               <div>
-                <h3 class="section-title">Sholat Wajib 5 Waktu</h3>
-                <p class="section-subtitle">Tiang agama, jangan pernah ditinggalkan</p>
+                <h3 class="level-stepper-title">Tingkatan Ibadah Harian</h3>
+                <p class="level-stepper-sub">Buka dan selesaikan bertahap dari Level 1 hingga Level 5</p>
               </div>
             </div>
-            <span class="section-counter" id="badge-wajib">0/5</span>
-          </div>
-
-          <div class="checklist-grid grid-2">
-            <!-- Subuh -->
-            <div class="check-item-card" data-key="subuh" data-cat="wajib">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Subuh</span>
-                  <span class="check-detail">2 Rakaat</span>
-                </div>
-              </div>
-              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
-                <span class="jamaah-pill">Jamaah</span>
-              </button>
-            </div>
-
-            <!-- Dzuhur -->
-            <div class="check-item-card" data-key="dzuhur" data-cat="wajib">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Dzuhur</span>
-                  <span class="check-detail">4 Rakaat</span>
-                </div>
-              </div>
-              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
-                <span class="jamaah-pill">Jamaah</span>
-              </button>
-            </div>
-
-            <!-- Ashar -->
-            <div class="check-item-card" data-key="ashar" data-cat="wajib">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Ashar</span>
-                  <span class="check-detail">4 Rakaat</span>
-                </div>
-              </div>
-              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
-                <span class="jamaah-pill">Jamaah</span>
-              </button>
-            </div>
-
-            <!-- Maghrib -->
-            <div class="check-item-card" data-key="maghrib" data-cat="wajib">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Maghrib</span>
-                  <span class="check-detail">3 Rakaat</span>
-                </div>
-              </div>
-              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
-                <span class="jamaah-pill">Jamaah</span>
-              </button>
-            </div>
-
-            <!-- Isya -->
-            <div class="check-item-card span-full" data-key="isya" data-cat="wajib">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Isya</span>
-                  <span class="check-detail">4 Rakaat</span>
-                </div>
-              </div>
-              <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
-                <span class="jamaah-pill">Jamaah</span>
+            <div class="level-view-switch-wrap">
+              <button type="button" id="btn-toggle-level-view" class="btn-level-view-mode" title="Ubah ke mode scroll semua level sekaligus">
+                <span id="level-mode-icon">📑</span>
+                <span id="level-mode-text">Mode Bertahap</span>
               </button>
             </div>
           </div>
-        </section>
 
-        <!-- SECTION 2: SHOLAT SUNNAH RAWATIB -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-title-wrap">
-              <span class="section-icon">✨</span>
-              <div>
-                <h3 class="section-title">Sholat Sunnah Rawatib</h3>
-                <p class="section-subtitle">Qobliyah & Ba'diyah pengiring sholat fardhu</p>
+          <!-- Stepper Scrollable Track -->
+          <div class="level-steps-track" role="tablist" aria-label="Tingkatan Ibadah">
+            <button type="button" class="level-step-card active" data-step="1" role="tab" aria-selected="true">
+              <div class="step-badge">1</div>
+              <div class="step-meta">
+                <span class="step-tag">LEVEL 1</span>
+                <span class="step-name">Sholat Wajib</span>
               </div>
-            </div>
-            <span class="section-counter" id="badge-rawatib">0/8</span>
-          </div>
+              <div class="step-status-indicator" id="step-ind-1">0/5</div>
+            </button>
 
-          <!-- Hadits Keutamaan Rawatib -->
-          <div class="rawatib-hadith-pill">
-            <span class="hadith-star">⭐</span>
-            <span>"Siapa shalat 12 rakaat rawatib sehari semalam, dibangunkan baginya rumah di surga." (HR. Muslim)</span>
-          </div>
+            <button type="button" class="level-step-card" data-step="2" role="tab" aria-selected="false">
+              <div class="step-badge">2</div>
+              <div class="step-meta">
+                <span class="step-tag">LEVEL 2</span>
+                <span class="step-name">Sholat Sunnah</span>
+              </div>
+              <div class="step-status-indicator" id="step-ind-2">0/11</div>
+            </button>
 
-          <!-- Group Subuh -->
-          <div class="rawatib-fardhu-block">
-            <div class="rawatib-fardhu-header">
-              <span class="fardhu-tag">Subuh</span>
-              <span class="fardhu-note">Sebelum fardhu</span>
-            </div>
-            <div class="checklist-grid grid-1">
-              <div class="check-item-card" data-key="qobliyahSubuh" data-cat="rawatib">
-                <div class="check-left">
-                  <div class="custom-checkbox">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  </div>
-                  <div class="check-text">
-                    <span class="check-name">Qobliyah Subuh</span>
-                    <span class="check-detail">2 Rakaat Fajar</span>
-                  </div>
+            <button type="button" class="level-step-card" data-step="3" role="tab" aria-selected="false">
+              <div class="step-badge">3</div>
+              <div class="step-meta">
+                <span class="step-tag">LEVEL 3</span>
+                <span class="step-name">Baca Quran</span>
+              </div>
+              <div class="step-status-indicator" id="step-ind-3">0/1</div>
+            </button>
+
+            <button type="button" class="level-step-card" data-step="4" role="tab" aria-selected="false">
+              <div class="step-badge">4</div>
+              <div class="step-meta">
+                <span class="step-tag">LEVEL 4</span>
+                <span class="step-name">Shaum Sunnah</span>
+              </div>
+              <div class="step-status-indicator" id="step-ind-4">-</div>
+            </button>
+
+            <button type="button" class="level-step-card" data-step="5" role="tab" aria-selected="false">
+              <div class="step-badge">5</div>
+              <div class="step-meta">
+                <span class="step-tag">LEVEL 5</span>
+                <span class="step-name">Hafalan Quran</span>
+              </div>
+              <div class="step-status-indicator" id="step-ind-5">0 Ayat</div>
+            </button>
+
+            <button type="button" class="level-step-card" data-step="6" role="tab" aria-selected="false">
+              <div class="step-badge">📝</div>
+              <div class="step-meta">
+                <span class="step-tag">REFLEKSI</span>
+                <span class="step-name">Muhasabah</span>
+              </div>
+              <div class="step-status-indicator" id="step-ind-6">Amalan</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- LEVEL 1: SHOLAT WAJIB -->
+        <!-- ========================================== -->
+        <div class="level-panel active" data-level="1" id="panel-level-1">
+          <section class="section-card level-card-highlight">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="level-number-pill">LEVEL 1</span>
+                <div>
+                  <h3 class="section-title">Level 1 : Sholat Wajib 5 Waktu</h3>
+                  <p class="section-subtitle">Tiang agama & fondasi utama keislaman</p>
                 </div>
-                <span class="sunnah-tag muakkad" title="Sangat dianjurkan">Mu'akkadah</span>
+              </div>
+              <span class="section-counter" id="badge-wajib">0/5</span>
+            </div>
+
+            <!-- Hadits Keutamaan Level 1 -->
+            <div class="level-hadith-pill">
+              <span class="hadith-star">🕌</span>
+              <span>"Amal pertama yang dihisab dari seorang hamba pada hari kiamat adalah shalatnya. Jika baik shalatnya, maka baiklah seluruh amalnya." (HR. Thabrani)</span>
+            </div>
+
+            <!-- Tantangan Istiqomah 10 Hari Sholat Wajib -->
+            <div class="wajib-consistency-card" id="wajib-consistency-card">
+              <div class="consistency-top">
+                <div class="consistency-badge-row">
+                  <span class="consistency-pill-tag">🎯 TANTANGAN ISTIQOMAH</span>
+                  <span class="consistency-lock-status" id="consistency-lock-status">
+                    <span class="lock-icon" id="consistency-lock-icon">🔒</span>
+                    <span id="consistency-lock-label">Level 2 Terkunci (Butuh 10 Hari Penuh)</span>
+                  </span>
+                </div>
+                <h4 class="consistency-title">Konsistensi Sholat Wajib 10 Hari Berturut-turut</h4>
+                <p class="consistency-subtitle">
+                  Selesaikan 5 waktu sholat fardhu tanpa ada yang bolong selama 10 hari untuk membuka <strong>Level 2: Sholat Sunnah</strong>.
+                </p>
+              </div>
+
+              <!-- Visual 10 Days Step Nodes -->
+              <div class="consistency-steps-grid" id="consistency-steps-grid">
+                <!-- Populated dynamically via JS: 10 day dots/nodes with day numbers, dates, and checkmarks -->
+              </div>
+
+              <!-- Streak & Progress Bar -->
+              <div class="consistency-progress-wrap">
+                <div class="consistency-progress-meta">
+                  <span class="consistency-stat-label">Progress Konsistensi:</span>
+                  <span class="consistency-stat-val" id="consistency-streak-text">0 / 10 Hari (0%)</span>
+                </div>
+                <div class="consistency-progress-bar-bg">
+                  <div class="consistency-progress-bar-fill" id="consistency-progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <div class="consistency-msg-box" id="consistency-msg-box">
+                  <span class="msg-icon" id="consistency-msg-icon">🌱</span>
+                  <span id="consistency-msg-text">Bismillah, mulai rekor istiqomah sholat 5 waktu Anda hari ini tanpa tertinggal.</span>
+                </div>
+              </div>
+
+              <!-- Quick Simulation / Test Controls -->
+              <div class="consistency-sim-actions">
+                <button type="button" class="btn-sim-action" id="btn-sim-unlock-10d" title="Simulasikan 10 hari sholat wajib lengkap untuk mencoba fitur Level 2">
+                  <span>⚡ Uji Coba: Simulasi 10 Hari Lengkap (Buka Level 2)</span>
+                </button>
+                <button type="button" class="btn-sim-action outline hidden" id="btn-sim-reset-10d" title="Reset simulasi ke kondisi hari ini (kunci kembali Level 2)">
+                  <span>🔄 Reset Simulasi (Kunci Kembali)</span>
+                </button>
               </div>
             </div>
-          </div>
 
-          <!-- Group Dzuhur -->
-          <div class="rawatib-fardhu-block">
-            <div class="rawatib-fardhu-header">
-              <span class="fardhu-tag">Dzuhur</span>
-              <span class="fardhu-note">Sebelum & sesudah fardhu</span>
-            </div>
             <div class="checklist-grid grid-2">
-              <div class="check-item-card" data-key="qobliyahDzuhur" data-cat="rawatib">
+              <!-- Subuh -->
+              <div class="check-item-card" data-key="subuh" data-cat="wajib">
                 <div class="check-left">
                   <div class="custom-checkbox">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </div>
                   <div class="check-text">
-                    <span class="check-name">Qobliyah Dzuhur</span>
-                    <span class="check-detail">2 / 4 Rakaat</span>
-                  </div>
-                </div>
-                <span class="sunnah-tag muakkad">Mu'akkadah</span>
-              </div>
-
-              <div class="check-item-card" data-key="badiyahDzuhur" data-cat="rawatib">
-                <div class="check-left">
-                  <div class="custom-checkbox">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  </div>
-                  <div class="check-text">
-                    <span class="check-name">Ba'diyah Dzuhur</span>
+                    <span class="check-name">Subuh</span>
                     <span class="check-detail">2 Rakaat</span>
                   </div>
                 </div>
-                <span class="sunnah-tag muakkad">Mu'akkadah</span>
+                <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                  <span class="jamaah-pill">Jamaah</span>
+                </button>
               </div>
-            </div>
-          </div>
 
-          <!-- Group Ashar -->
-          <div class="rawatib-fardhu-block">
-            <div class="rawatib-fardhu-header">
-              <span class="fardhu-tag">Ashar</span>
-              <span class="fardhu-note">Sebelum fardhu</span>
-            </div>
-            <div class="checklist-grid grid-1">
-              <div class="check-item-card" data-key="qobliyahAshar" data-cat="rawatib">
+              <!-- Dzuhur -->
+              <div class="check-item-card" data-key="dzuhur" data-cat="wajib">
                 <div class="check-left">
                   <div class="custom-checkbox">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </div>
                   <div class="check-text">
-                    <span class="check-name">Qobliyah Ashar</span>
-                    <span class="check-detail">2 / 4 Rakaat</span>
+                    <span class="check-name">Dzuhur</span>
+                    <span class="check-detail">4 Rakaat</span>
                   </div>
                 </div>
-                <span class="sunnah-tag ghairu" title="Dianjurkan">Ghairu Mu'akkadah</span>
+                <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                  <span class="jamaah-pill">Jamaah</span>
+                </button>
               </div>
-            </div>
-          </div>
 
-          <!-- Group Maghrib -->
-          <div class="rawatib-fardhu-block">
-            <div class="rawatib-fardhu-header">
-              <span class="fardhu-tag">Maghrib</span>
-              <span class="fardhu-note">Sebelum & sesudah fardhu</span>
-            </div>
-            <div class="checklist-grid grid-2">
-              <div class="check-item-card" data-key="qobliyahMaghrib" data-cat="rawatib">
+              <!-- Ashar -->
+              <div class="check-item-card" data-key="ashar" data-cat="wajib">
                 <div class="check-left">
                   <div class="custom-checkbox">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </div>
                   <div class="check-text">
-                    <span class="check-name">Qobliyah Maghrib</span>
-                    <span class="check-detail">2 Rakaat</span>
+                    <span class="check-name">Ashar</span>
+                    <span class="check-detail">4 Rakaat</span>
                   </div>
                 </div>
-                <span class="sunnah-tag ghairu">Ghairu Mu'akkadah</span>
+                <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                  <span class="jamaah-pill">Jamaah</span>
+                </button>
               </div>
 
-              <div class="check-item-card" data-key="badiyahMaghrib" data-cat="rawatib">
+              <!-- Maghrib -->
+              <div class="check-item-card" data-key="maghrib" data-cat="wajib">
                 <div class="check-left">
                   <div class="custom-checkbox">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </div>
                   <div class="check-text">
-                    <span class="check-name">Ba'diyah Maghrib</span>
-                    <span class="check-detail">2 Rakaat</span>
+                    <span class="check-name">Maghrib</span>
+                    <span class="check-detail">3 Rakaat</span>
                   </div>
                 </div>
-                <span class="sunnah-tag muakkad">Mu'akkadah</span>
+                <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                  <span class="jamaah-pill">Jamaah</span>
+                </button>
               </div>
-            </div>
-          </div>
 
-          <!-- Group Isya -->
-          <div class="rawatib-fardhu-block">
-            <div class="rawatib-fardhu-header">
-              <span class="fardhu-tag">Isya</span>
-              <span class="fardhu-note">Sebelum & sesudah fardhu</span>
-            </div>
-            <div class="checklist-grid grid-2">
-              <div class="check-item-card" data-key="qobliyahIsya" data-cat="rawatib">
+              <!-- Isya -->
+              <div class="check-item-card span-full" data-key="isya" data-cat="wajib">
                 <div class="check-left">
                   <div class="custom-checkbox">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </div>
                   <div class="check-text">
-                    <span class="check-name">Qobliyah Isya</span>
-                    <span class="check-detail">2 Rakaat</span>
+                    <span class="check-name">Isya</span>
+                    <span class="check-detail">4 Rakaat</span>
                   </div>
                 </div>
-                <span class="sunnah-tag ghairu">Ghairu Mu'akkadah</span>
+                <button type="button" class="btn-jamaah-toggle" title="Klik jika sholat berjamaah">
+                  <span class="jamaah-pill">Jamaah</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Level 1 Navigation Footer -->
+            <div class="level-nav-footer">
+              <span class="level-progress-hint" id="level-1-status-hint">Tuntaskan 5 sholat fardhu</span>
+              <button type="button" class="btn-level-next" id="btn-next-from-level1" data-goto="2">
+                <span id="btn-next-level1-label">Lanjut Level 2: Sholat Sunnah</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- LEVEL 2: SHOLAT SUNNAH -->
+        <!-- ========================================== -->
+        <div class="level-panel" data-level="2" id="panel-level-2">
+          <!-- Locked Banner for Level 2 -->
+          <div class="level-locked-banner hidden" id="level-lock-banner-2">
+            <div class="locked-icon-halo">🔒</div>
+            <span class="locked-badge-pill">LEVEL 2 TERKUNCI</span>
+            <h3 class="locked-banner-title">Sholat Sunnah Belum Bisa Dibuka</h3>
+            <p class="locked-banner-desc">
+              Untuk membuka tingkatan ini, Anda harus konsisten menunaikan <strong>Sholat Wajib 5 Waktu selama 10 hari berturut-turut tanpa ada sholat yang bolong</strong>.
+            </p>
+            <div class="locked-progress-box">
+              <div class="locked-progress-header">
+                <span>Progress Konsistensi Sholat Wajib:</span>
+                <strong id="locked-banner-streak-2" class="text-gold">0 / 10 Hari (0%)</strong>
+              </div>
+              <div class="locked-progress-bar-bg">
+                <div class="locked-progress-bar-fill" id="locked-progress-fill-2" style="width: 0%;"></div>
+              </div>
+              <p class="locked-progress-hint" id="locked-progress-hint-2">Kurang 10 hari lagi sholat fardhu lengkap tanpa terlewat.</p>
+            </div>
+            <div class="locked-actions-row">
+              <button type="button" class="btn-primary btn-jump-to-level1" data-goto="1">
+                <span>👉 Kerjakan Sholat Wajib di Level 1</span>
+              </button>
+              <button type="button" class="btn-secondary btn-sim-unlock-from-panel" data-sim="2">
+                <span>⚡ Uji Coba: Buka Level 2 (Simulasi 10 Hari)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Rawatib -->
+          <section class="section-card level-card-highlight">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="level-number-pill">LEVEL 2</span>
+                <div>
+                  <h3 class="section-title">Level 2 : Sholat Sunnah Rawatib</h3>
+                  <p class="section-subtitle">Qobliyah & Ba'diyah pengiring sholat fardhu</p>
+                </div>
+              </div>
+              <span class="section-counter" id="badge-rawatib">0/8</span>
+            </div>
+
+            <!-- Hadits Keutamaan Rawatib -->
+            <div class="level-hadith-pill">
+              <span class="hadith-star">⭐</span>
+              <span>"Siapa shalat 12 rakaat rawatib sehari semalam, dibangunkan baginya rumah di surga." (HR. Muslim)</span>
+            </div>
+
+            <!-- Tantangan Istiqomah Level 2: Sholat Sunnah -->
+            <div class="wajib-consistency-card sunnah-card" id="sunnah-consistency-card">
+              <div class="consistency-top">
+                <div class="consistency-badge-row">
+                  <span class="consistency-pill-tag">🎯 TANTANGAN LEVEL 2</span>
+                  <span class="consistency-lock-status" id="sunnah-lock-status">
+                    <span class="lock-icon" id="sunnah-lock-icon">🔒</span>
+                    <span id="sunnah-lock-label">Level 3 Terkunci (Butuh 10 Hari Sunnah)</span>
+                  </span>
+                </div>
+                <h4 class="consistency-title">Konsistensi Sholat Sunnah 10 Hari</h4>
+                <p class="consistency-subtitle">
+                  Tunaikan sholat sunnah (rawatib, dhuha, tahajud, witir) minimal 1 amalan per hari selama 10 hari untuk membuka <strong>Level 3 : Baca Quran</strong>.
+                </p>
               </div>
 
-              <div class="check-item-card" data-key="badiyahIsya" data-cat="rawatib">
+              <!-- Visual 10 Days Step Nodes -->
+              <div class="consistency-steps-grid" id="sunnah-steps-grid">
+                <!-- Populated dynamically via JS -->
+              </div>
+
+              <!-- Streak & Progress Bar -->
+              <div class="consistency-progress-wrap">
+                <div class="consistency-progress-meta">
+                  <span class="consistency-stat-label">Progress Sholat Sunnah:</span>
+                  <span class="consistency-stat-val" id="sunnah-streak-text">0 / 10 Hari (0%)</span>
+                </div>
+                <div class="consistency-progress-bar-bg">
+                  <div class="consistency-progress-bar-fill" id="sunnah-progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <div class="consistency-msg-box" id="sunnah-msg-box">
+                  <span class="msg-icon" id="sunnah-msg-icon">✨</span>
+                  <span id="sunnah-msg-text">Tunaikan sholat sunnah qobliyah/ba'diyah atau sholat malam untuk menyempurnakan pahala.</span>
+                </div>
+              </div>
+
+              <!-- Quick Simulation Controls -->
+              <div class="consistency-sim-actions">
+                <button type="button" class="btn-sim-action" id="btn-sim-unlock-l3" title="Simulasikan 10 hari sholat sunnah untuk membuka Level 3">
+                  <span>⚡ Uji Coba: Buka Level 3 (Simulasi 10 Hari Sunnah)</span>
+                </button>
+                <button type="button" class="btn-sim-action outline hidden" id="btn-sim-reset-l3" title="Reset Level 3">
+                  <span>🔄 Kunci Kembali Level 3</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group Subuh -->
+            <div class="rawatib-fardhu-block">
+              <div class="rawatib-fardhu-header">
+                <span class="fardhu-tag">Subuh</span>
+                <span class="fardhu-note">Sebelum fardhu</span>
+              </div>
+              <div class="checklist-grid grid-1">
+                <div class="check-item-card" data-key="qobliyahSubuh" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Qobliyah Subuh</span>
+                      <span class="check-detail">2 Rakaat Fajar</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag muakkad" title="Sangat dianjurkan">Mu'akkadah</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group Dzuhur -->
+            <div class="rawatib-fardhu-block">
+              <div class="rawatib-fardhu-header">
+                <span class="fardhu-tag">Dzuhur</span>
+                <span class="fardhu-note">Sebelum & sesudah fardhu</span>
+              </div>
+              <div class="checklist-grid grid-2">
+                <div class="check-item-card" data-key="qobliyahDzuhur" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Qobliyah Dzuhur</span>
+                      <span class="check-detail">2 / 4 Rakaat</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag muakkad">Mu'akkadah</span>
+                </div>
+
+                <div class="check-item-card" data-key="badiyahDzuhur" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Ba'diyah Dzuhur</span>
+                      <span class="check-detail">2 Rakaat</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag muakkad">Mu'akkadah</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group Ashar -->
+            <div class="rawatib-fardhu-block">
+              <div class="rawatib-fardhu-header">
+                <span class="fardhu-tag">Ashar</span>
+                <span class="fardhu-note">Sebelum fardhu</span>
+              </div>
+              <div class="checklist-grid grid-1">
+                <div class="check-item-card" data-key="qobliyahAshar" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Qobliyah Ashar</span>
+                      <span class="check-detail">2 / 4 Rakaat</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag ghairu" title="Dianjurkan">Ghairu Mu'akkadah</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group Maghrib -->
+            <div class="rawatib-fardhu-block">
+              <div class="rawatib-fardhu-header">
+                <span class="fardhu-tag">Maghrib</span>
+                <span class="fardhu-note">Sebelum & sesudah fardhu</span>
+              </div>
+              <div class="checklist-grid grid-2">
+                <div class="check-item-card" data-key="qobliyahMaghrib" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Qobliyah Maghrib</span>
+                      <span class="check-detail">2 Rakaat</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag ghairu">Ghairu Mu'akkadah</span>
+                </div>
+
+                <div class="check-item-card" data-key="badiyahMaghrib" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Ba'diyah Maghrib</span>
+                      <span class="check-detail">2 Rakaat</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag muakkad">Mu'akkadah</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group Isya -->
+            <div class="rawatib-fardhu-block">
+              <div class="rawatib-fardhu-header">
+                <span class="fardhu-tag">Isya</span>
+                <span class="fardhu-note">Sebelum & sesudah fardhu</span>
+              </div>
+              <div class="checklist-grid grid-2">
+                <div class="check-item-card" data-key="qobliyahIsya" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Qobliyah Isya</span>
+                      <span class="check-detail">2 Rakaat</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag ghairu">Ghairu Mu'akkadah</span>
+                </div>
+
+                <div class="check-item-card" data-key="badiyahIsya" data-cat="rawatib">
+                  <div class="check-left">
+                    <div class="custom-checkbox">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="check-text">
+                      <span class="check-name">Ba'diyah Isya</span>
+                      <span class="check-detail">2 Rakaat</span>
+                    </div>
+                  </div>
+                  <span class="sunnah-tag muakkad">Mu'akkadah</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Sholat Sunnah Waktu Tertentu -->
+          <section class="section-card">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="section-icon">🌟</span>
+                <div>
+                  <h3 class="section-title">Sholat Sunnah Waktu Tertentu</h3>
+                  <p class="section-subtitle">Dhuha, Tahajud, & Witir pembuka berkah</p>
+                </div>
+              </div>
+              <span class="section-counter" id="badge-sunnah">0/3</span>
+            </div>
+
+            <div class="checklist-grid grid-3">
+              <!-- Dhuha -->
+              <div class="check-item-card" data-key="dhuha" data-cat="sunnah">
                 <div class="check-left">
                   <div class="custom-checkbox">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </div>
                   <div class="check-text">
-                    <span class="check-name">Ba'diyah Isya</span>
-                    <span class="check-detail">2 Rakaat</span>
+                    <span class="check-name">Dhuha</span>
+                    <span class="check-detail">Min. 2 Rakaat</span>
                   </div>
                 </div>
-                <span class="sunnah-tag muakkad">Mu'akkadah</span>
               </div>
+
+              <!-- Tahajud -->
+              <div class="check-item-card" data-key="tahajud" data-cat="sunnah">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Tahajud</span>
+                    <span class="check-detail">Qiyamul Lail</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Witir -->
+              <div class="check-item-card" data-key="witir" data-cat="sunnah">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Witir</span>
+                    <span class="check-detail">Penutup Malam</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Level 2 Navigation Footer -->
+            <div class="level-nav-footer">
+              <button type="button" class="btn-level-prev" data-goto="1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Level 1: Sholat Wajib</span>
+              </button>
+              <button type="button" class="btn-level-next" id="btn-next-from-level2" data-goto="3">
+                <span id="btn-next-level2-label">Lanjut Level 3: Baca Quran</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- LEVEL 3: BACA QURAN -->
+        <!-- ========================================== -->
+        <div class="level-panel" data-level="3" id="panel-level-3">
+          <!-- Locked Banner for Level 3 -->
+          <div class="level-locked-banner hidden" id="level-lock-banner-3">
+            <div class="locked-icon-halo">🔒</div>
+            <span class="locked-badge-pill">LEVEL 3 TERKUNCI</span>
+            <h3 class="locked-banner-title">Baca Al-Qur'an Belum Bisa Dibuka</h3>
+            <p class="locked-banner-desc">
+              Untuk membuka tingkatan ini, Anda harus menyelesaikan terlebih dahulu <strong>Level 2 dengan istiqomah Sholat Sunnah selama 10 hari</strong>.
+            </p>
+            <div class="locked-progress-box">
+              <div class="locked-progress-header">
+                <span>Syarat: Sholat Sunnah 10 Hari:</span>
+                <strong id="locked-banner-streak-3" class="text-gold">0 / 10 Hari (0%)</strong>
+              </div>
+              <div class="locked-progress-bar-bg">
+                <div class="locked-progress-bar-fill" id="locked-progress-fill-3" style="width: 0%;"></div>
+              </div>
+              <p class="locked-progress-hint" id="locked-progress-hint-3">Tunaikan sholat rawatib atau sunnah lainnya setiap hari.</p>
+            </div>
+            <div class="locked-actions-row">
+              <button type="button" class="btn-primary btn-jump-to-level" data-goto="2">
+                <span>👉 Kerjakan Sholat Sunnah di Level 2</span>
+              </button>
+              <button type="button" class="btn-secondary btn-sim-unlock-level" data-unlock-level="3">
+                <span>⚡ Uji Coba: Buka Level 3 (Simulasi)</span>
+              </button>
             </div>
           </div>
-        </section>
 
-        <!-- SECTION 3: SHOLAT SUNNAH WAKTU TERTENTU -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-title-wrap">
-              <span class="section-icon">🌟</span>
-              <div>
-                <h3 class="section-title">Sholat Sunnah Lain</h3>
-                <p class="section-subtitle">Dhuha, Tahajud, & Witir</p>
+          <section class="section-card level-card-highlight quran-card">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="level-number-pill">LEVEL 3</span>
+                <div>
+                  <h3 class="section-title">Level 3 : Baca Quran</h3>
+                  <p class="section-subtitle">Tadarus & Tilawah Kitabullah Harian</p>
+                </div>
+              </div>
+              <span class="section-counter" id="badge-quran">0/1</span>
+            </div>
+
+            <!-- Hadits Keutamaan Baca Quran -->
+            <div class="level-hadith-pill">
+              <span class="hadith-star">📖</span>
+              <span>"Barangsiapa membaca satu huruf dari Kitabullah, maka baginya satu kebaikan dan dilipatgandakan sepuluh kebaikan semisalnya." (HR. Tirmidzi)</span>
+            </div>
+
+            <!-- Tantangan Istiqomah Level 3: Baca Quran -->
+            <div class="wajib-consistency-card quran-consistency-card" id="quran-consistency-card">
+              <div class="consistency-top">
+                <div class="consistency-badge-row">
+                  <span class="consistency-pill-tag">🎯 TANTANGAN LEVEL 3</span>
+                  <span class="consistency-lock-status" id="quran-lock-status">
+                    <span class="lock-icon" id="quran-lock-icon">🔒</span>
+                    <span id="quran-lock-label">Level 4 Terkunci (Butuh 10 Hari Tilawah)</span>
+                  </span>
+                </div>
+                <h4 class="consistency-title">Konsistensi Tilawah Al-Qur'an 10 Hari</h4>
+                <p class="consistency-subtitle">
+                  Tunaikan tilawah/tadarus Al-Qur'an harian (minimal 1 'ain atau 1 halaman) selama 10 hari untuk membuka <strong>Level 4 : Shaum Sunnah</strong>.
+                </p>
+              </div>
+
+              <!-- Visual 10 Days Step Nodes -->
+              <div class="consistency-steps-grid" id="quran-steps-grid">
+                <!-- Populated dynamically via JS -->
+              </div>
+
+              <!-- Streak & Progress Bar -->
+              <div class="consistency-progress-wrap">
+                <div class="consistency-progress-meta">
+                  <span class="consistency-stat-label">Progress Tilawah Quran:</span>
+                  <span class="consistency-stat-val" id="quran-streak-text">0 / 10 Hari (0%)</span>
+                </div>
+                <div class="consistency-progress-bar-bg">
+                  <div class="consistency-progress-bar-fill" id="quran-progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <div class="consistency-msg-box" id="quran-msg-box">
+                  <span class="msg-icon" id="quran-msg-icon">📖</span>
+                  <span id="quran-msg-text">Luangkan waktu istiqomah membaca ayat-ayat suci Al-Qur'an setiap hari.</span>
+                </div>
+              </div>
+
+              <!-- Quick Simulation Controls -->
+              <div class="consistency-sim-actions">
+                <button type="button" class="btn-sim-action" id="btn-sim-unlock-l4" title="Simulasikan 10 hari tilawah untuk membuka Level 4">
+                  <span>⚡ Uji Coba: Buka Level 4 (Simulasi 10 Hari Tilawah)</span>
+                </button>
+                <button type="button" class="btn-sim-action outline hidden" id="btn-sim-reset-l4" title="Reset Level 4">
+                  <span>🔄 Kunci Kembali Level 4</span>
+                </button>
               </div>
             </div>
-            <span class="section-counter" id="badge-sunnah">0/3</span>
+
+            <div class="quran-modules">
+              <!-- Tadarus Card -->
+              <div class="quran-module-item">
+                <div class="quran-check-header" data-key="tadarusDone">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="quran-title-info">
+                    <span class="quran-label">Tadarus Al-Qur'an Selesai Hari Ini</span>
+                    <span class="target-tag">Target: 1 'Ain / 1 Halaman / Hari</span>
+                  </div>
+                </div>
+                <div class="quran-inputs-row">
+                  <div class="input-field-group">
+                    <label for="quran-tadarus-surah">Nama Surah</label>
+                    <input type="text" id="quran-tadarus-surah" placeholder="Contoh: Al-Baqarah" list="surah-list">
+                  </div>
+                  <div class="input-field-group input-narrow">
+                    <label for="quran-tadarus-ain">'Ain / Ruku' ke-</label>
+                    <input type="number" id="quran-tadarus-ain" min="1" placeholder="1">
+                  </div>
+                </div>
+
+                <!-- Quick Action to Read Quran inside the App -->
+                <div class="quran-quick-read-actions">
+                  <button type="button" id="btn-jump-to-quran-tab" class="btn-inline-action">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    <span>Buka Al-Qur'an Digital 114 Surah (Baca & Audio) ➔</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pahami arti & Tadabbur -->
+              <div class="quran-module-item">
+                <div class="quran-check-header" data-key="tadabburDone">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="quran-title-info">
+                    <span class="quran-label">Pahami Arti & Tadabbur Ayat</span>
+                    <span class="target-tag highlight">Pelajaran Utama</span>
+                  </div>
+                </div>
+                <div class="tadabbur-box">
+                  <textarea id="quran-tadabbur-text" rows="3" placeholder="Tuliskan hikmah, makna, atau pelajaran yang kamu peroleh dari ayat Al-Qur'an hari ini..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Level 3 Navigation Footer -->
+            <div class="level-nav-footer">
+              <button type="button" class="btn-level-prev" data-goto="2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Level 2: Sholat Sunnah</span>
+              </button>
+              <button type="button" class="btn-level-next" id="btn-next-from-level3" data-goto="4">
+                <span id="btn-next-level3-label">Lanjut Level 4: Shaum Sunnah</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- LEVEL 4: SHAUM SUNNAH SENIN & KAMIS, YAUMUL BIDH -->
+        <!-- ========================================== -->
+        <div class="level-panel" data-level="4" id="panel-level-4">
+          <!-- Locked Banner for Level 4 -->
+          <div class="level-locked-banner hidden" id="level-lock-banner-4">
+            <div class="locked-icon-halo">🔒</div>
+            <span class="locked-badge-pill">LEVEL 4 TERKUNCI</span>
+            <h3 class="locked-banner-title">Shaum Sunnah Belum Bisa Dibuka</h3>
+            <p class="locked-banner-desc">
+              Untuk membuka tingkatan ini, Anda harus menyelesaikan terlebih dahulu <strong>Level 3 dengan istiqomah Tilawah Al-Qur'an selama 10 hari</strong>.
+            </p>
+            <div class="locked-progress-box">
+              <div class="locked-progress-header">
+                <span>Syarat: Tilawah Al-Qur'an 10 Hari:</span>
+                <strong id="locked-banner-streak-4" class="text-gold">0 / 10 Hari (0%)</strong>
+              </div>
+              <div class="locked-progress-bar-bg">
+                <div class="locked-progress-bar-fill" id="locked-progress-fill-4" style="width: 0%;"></div>
+              </div>
+              <p class="locked-progress-hint" id="locked-progress-hint-4">Baca minimal 1 'ain atau 1 halaman setiap hari.</p>
+            </div>
+            <div class="locked-actions-row">
+              <button type="button" class="btn-primary btn-jump-to-level" data-goto="3">
+                <span>👉 Kerjakan Tilawah di Level 3</span>
+              </button>
+              <button type="button" class="btn-secondary btn-sim-unlock-level" data-unlock-level="4">
+                <span>⚡ Uji Coba: Buka Level 4 (Simulasi)</span>
+              </button>
+            </div>
           </div>
 
-          <div class="checklist-grid grid-3">
-            <!-- Dhuha -->
-            <div class="check-item-card" data-key="dhuha" data-cat="sunnah">
-              <div class="check-left">
-                <div class="custom-checkbox">
+          <section class="section-card level-card-highlight shaum-card">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="level-number-pill">LEVEL 4</span>
+                <div>
+                  <h3 class="section-title">Level 4 : Shaum Sunnah</h3>
+                  <p class="section-subtitle">Shaum Senin & Kamis, Yaumul Bidh (13, 14, 15 H)</p>
+                </div>
+              </div>
+              <span class="section-counter" id="badge-shaum">-</span>
+            </div>
+
+            <!-- Smart Hijri & Calendar Detection Banner -->
+            <div class="shaum-smart-banner" id="shaum-smart-banner">
+              <div class="shaum-banner-icon">🌙</div>
+              <div class="shaum-banner-text">
+                <strong id="shaum-banner-title">Jadwal Shaum Sunnah</strong>
+                <span id="shaum-banner-sub">Memeriksa penanggalan hari ini...</span>
+              </div>
+            </div>
+
+            <!-- Hadits Keutamaan Shaum Sunnah -->
+            <div class="level-hadith-pill">
+              <span class="hadith-star">✨</span>
+              <span>"Amal-amal diperiksa pada hari Senin & Kamis, maka aku suka jika amalku diperiksa saat berpuasa." (HR. Tirmidzi) &bull; "Puasalah 3 hari setiap bulan (13, 14, 15), itu seperti puasa sepanjang tahun." (HR. Bukhari)</span>
+            </div>
+
+            <!-- Tantangan Istiqomah Level 4: Shaum Sunnah -->
+            <div class="wajib-consistency-card shaum-consistency-card" id="shaum-consistency-card">
+              <div class="consistency-top">
+                <div class="consistency-badge-row">
+                  <span class="consistency-pill-tag">🎯 TANTANGAN LEVEL 4</span>
+                  <span class="consistency-lock-status" id="shaum-lock-status">
+                    <span class="lock-icon" id="shaum-lock-icon">🔒</span>
+                    <span id="shaum-lock-label">Level 5 Terkunci (Butuh 4 Hari Shaum)</span>
+                  </span>
+                </div>
+                <h4 class="consistency-title">Istiqomah Shaum Sunnah 4 Hari</h4>
+                <p class="consistency-subtitle">
+                  Laksanakan shaum sunnah minimal 4 hari (Senin & Kamis atau Yaumul Bidh 13, 14, 15 H) untuk membuka Mahkota Tingkatan: <strong>Level 5 : Hafalan Quran Per Ayat</strong>.
+                </p>
+              </div>
+
+              <!-- Visual 4 Nodes Grid -->
+              <div class="consistency-steps-grid shaum-nodes-grid" id="shaum-steps-grid">
+                <!-- Populated dynamically via JS -->
+              </div>
+
+              <!-- Streak & Progress Bar -->
+              <div class="consistency-progress-wrap">
+                <div class="consistency-progress-meta">
+                  <span class="consistency-stat-label">Progress Shaum Sunnah:</span>
+                  <span class="consistency-stat-val" id="shaum-streak-text">0 / 4 Hari (0%)</span>
+                </div>
+                <div class="consistency-progress-bar-bg">
+                  <div class="consistency-progress-bar-fill" id="shaum-progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <div class="consistency-msg-box" id="shaum-msg-box">
+                  <span class="msg-icon" id="shaum-msg-icon">🌙</span>
+                  <span id="shaum-msg-text">Jalankan ibadah puasa sunnah Senin & Kamis atau Yaumul Bidh untuk melatih ketakwaan.</span>
+                </div>
+              </div>
+
+              <!-- Quick Simulation Controls -->
+              <div class="consistency-sim-actions">
+                <button type="button" class="btn-sim-action" id="btn-sim-unlock-l5" title="Simulasikan 4 hari shaum untuk membuka Level 5">
+                  <span>⚡ Uji Coba: Buka Level 5 (Simulasi 4 Hari Shaum)</span>
+                </button>
+                <button type="button" class="btn-sim-action outline hidden" id="btn-sim-reset-l5" title="Reset Level 5">
+                  <span>🔄 Kunci Kembali Level 5</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Shaum Status Switch Card -->
+            <div class="shaum-status-card" id="shaum-toggle-box">
+              <div class="shaum-check-row">
+                <div class="shaum-main-checkbox custom-checkbox" id="shaum-checkbox">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
-                <div class="check-text">
-                  <span class="check-name">Dhuha</span>
-                  <span class="check-detail">Min. 2 Rakaat</span>
+                <div class="shaum-text-info">
+                  <span class="shaum-title" id="shaum-status-label">Sedang / Telah Berpuasa Hari Ini</span>
+                  <span class="shaum-desc" id="shaum-status-sub">Klik kotak untuk mencatat pelaksanaan ibadah shaum sunnah</span>
+                </div>
+                <span class="shaum-badge-pill" id="shaum-active-badge">Belum Puasa</span>
+              </div>
+            </div>
+
+            <!-- Pilihan Kategori Shaum Sunnah -->
+            <div class="shaum-type-container">
+              <label class="input-label-sm">Kategori Puasa Hari Ini:</label>
+              <div class="shaum-type-chips">
+                <button type="button" class="shaum-chip active" data-type="senin-kamis">
+                  <span>🌙 Senin & Kamis</span>
+                </button>
+                <button type="button" class="shaum-chip" data-type="ayyamul-bidh">
+                  <span>🌕 Yaumul Bidh (13, 14, 15 H)</span>
+                </button>
+                <button type="button" class="shaum-chip" data-type="daud">
+                  <span>⚡ Puasa Daud</span>
+                </button>
+                <button type="button" class="shaum-chip" data-type="lainnya">
+                  <span>⭐ Shaum Sunnah Pilihan / Qadha</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Accordion / Doa Berbuka & Niat Puasa -->
+            <div class="shaum-doa-box">
+              <div class="shaum-doa-header" id="shaum-doa-toggle">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="doa-icon">🤲</span>
+                  <span style="font-size:0.82rem; font-weight:600; color:var(--text-main);">Niat Puasa & Doa Buka Puasa</span>
+                </div>
+                <span class="doa-arrow" id="shaum-doa-arrow">▾</span>
+              </div>
+              <div class="shaum-doa-body hidden" id="shaum-doa-content">
+                <div class="doa-item">
+                  <span class="doa-label">Niat Puasa Sunnah:</span>
+                  <p class="doa-arabic">نَوَيْتُ صَوْمَ هٰذَا الْيَوْمِ عَنْ أَدَاءِ سُنَّةٍ لِلّٰهِ تَعَالَى</p>
+                  <p class="doa-latin">"Nawaitu shauma hadzal yaumi 'an ada'i sunnatin lillahi ta'ala."</p>
+                  <p class="doa-arti">Artinya: Saya berniat puasa sunnah hari ini karena Allah Ta'ala.</p>
+                </div>
+                <div class="doa-item" style="margin-top:10px;">
+                  <span class="doa-label">Doa Berbuka Puasa (Shahih):</span>
+                  <p class="doa-arabic">ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللهُ</p>
+                  <p class="doa-latin">"Dzahabadh zhama'u wabtallatil 'uruuqu wa tsabatal ajru in syaa Allah."</p>
+                  <p class="doa-arti">Artinya: Telah hilang rasa haus, telah basah urat-urat, dan telah pasti pahala, insya Allah. (HR. Abu Dawud)</p>
                 </div>
               </div>
             </div>
 
-            <!-- Tahajud -->
-            <div class="check-item-card" data-key="tahajud" data-cat="sunnah">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Tahajud</span>
-                  <span class="check-detail">Qiyamul Lail</span>
-                </div>
-              </div>
+            <!-- Level 4 Navigation Footer -->
+            <div class="level-nav-footer">
+              <button type="button" class="btn-level-prev" data-goto="3">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Level 3: Baca Quran</span>
+              </button>
+              <button type="button" class="btn-level-next" id="btn-next-from-level4" data-goto="5">
+                <span id="btn-next-level4-label">Lanjut Level 5: Hafalan Quran</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
             </div>
+          </section>
+        </div>
 
-            <!-- Witir -->
-            <div class="check-item-card" data-key="witir" data-cat="sunnah">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Witir</span>
-                  <span class="check-detail">Penutup Malam</span>
-                </div>
+        <!-- ========================================== -->
+        <!-- LEVEL 5: HAFALAN QURAN PER AYAT -->
+        <!-- ========================================== -->
+        <div class="level-panel" data-level="5" id="panel-level-5">
+          <!-- Locked Banner for Level 5 -->
+          <div class="level-locked-banner hidden" id="level-lock-banner-5">
+            <div class="locked-icon-halo">🔒</div>
+            <span class="locked-badge-pill gold">LEVEL 5 TERKUNCI</span>
+            <h3 class="locked-banner-title">Hafalan Quran Per Ayat Belum Bisa Dibuka</h3>
+            <p class="locked-banner-desc">
+              Puncak tingkatan ibadah ini akan terbuka setelah Anda menyelesaikan <strong>Level 4 dengan istiqomah Shaum Sunnah minimal 4 hari</strong>.
+            </p>
+            <div class="locked-progress-box">
+              <div class="locked-progress-header">
+                <span>Syarat: Shaum Sunnah 4 Hari:</span>
+                <strong id="locked-banner-streak-5" class="text-gold">0 / 4 Hari (0%)</strong>
               </div>
+              <div class="locked-progress-bar-bg">
+                <div class="locked-progress-bar-fill" id="locked-progress-fill-5" style="width: 0%;"></div>
+              </div>
+              <p class="locked-progress-hint" id="locked-progress-hint-5">Tunaikan ibadah shaum sunnah Senin & Kamis atau Yaumul Bidh.</p>
+            </div>
+            <div class="locked-actions-row">
+              <button type="button" class="btn-primary btn-jump-to-level" data-goto="4">
+                <span>👉 Kerjakan Shaum di Level 4</span>
+              </button>
+              <button type="button" class="btn-secondary btn-sim-unlock-level" data-unlock-level="5">
+                <span>⚡ Uji Coba: Buka Level 5 (Simulasi)</span>
+              </button>
             </div>
           </div>
-        </section>
 
-        <!-- SECTION 3: IBADAH LAIN -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-title-wrap">
-              <span class="section-icon">🌿</span>
-              <div>
-                <h3 class="section-title">Ibadah & Amalan Lain</h3>
-                <p class="section-subtitle">Kebiasaan baik menjaga kesucian rohani</p>
-              </div>
-            </div>
-            <span class="section-counter" id="badge-lain">0/4</span>
-          </div>
-
-          <div class="checklist-grid grid-2">
-            <!-- Wudhu -->
-            <div class="check-item-card" data-key="wudhu" data-cat="lain">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Menjaga Wudhu</span>
-                  <span class="check-detail">Sebelum tidur / dawam</span>
+          <section class="section-card level-card-highlight quran-card">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="level-number-pill gold">LEVEL 5</span>
+                <div>
+                  <h3 class="section-title">Level 5 : Hafalan Quran Per Ayat</h3>
+                  <p class="section-subtitle">Ziyadah baru & muroja'ah ayat demi ayat</p>
                 </div>
               </div>
+              <span class="section-counter" id="badge-hafalan">0/1</span>
             </div>
 
-            <!-- Sedekah -->
-            <div class="check-item-card" data-key="sedekah" data-cat="lain">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <!-- Hadits Keutamaan Hafalan Quran -->
+            <div class="level-hadith-pill gold">
+              <span class="hadith-star">👑</span>
+              <span>"Dikatakan kepada penghafal Al-Qur'an: Bacalah, naiklah, dan tartilkanlah... kedudukanmu adalah pada akhir ayat yang engkau baca." (HR. Abu Dawud & Tirmidzi)</span>
+            </div>
+
+            <!-- Pinnacle Crown Banner for Level 5 -->
+            <div class="wajib-consistency-card pinnacle-card" id="hafalan-pinnacle-card">
+              <div class="consistency-top">
+                <div class="consistency-badge-row">
+                  <span class="consistency-pill-tag gold">👑 TINGKATAN TERTINGGI TERCAPAI</span>
+                  <span class="consistency-lock-status unlocked">
+                    <span class="lock-icon">🏆</span>
+                    <span>Mumtaz: Seluruh 5 Level Terbuka!</span>
+                  </span>
                 </div>
-                <div class="check-text">
-                  <span class="check-name">Sedekah Subuh</span>
-                  <span class="check-detail">Kebaikan & infaq</span>
-                </div>
+                <h4 class="consistency-title">Puncak Tingkatan Amal: Mahkota Hafalan Al-Qur'an</h4>
+                <p class="consistency-subtitle">
+                  Barakallahu fiik! Anda telah melalui tahapan Sholat Wajib, Sholat Sunnah, Tilawah, hingga Shaum Sunnah. Jagalah hafalan ayat-ayat suci Al-Qur'an dengan muroja'ah berkesinambungan.
+                </p>
               </div>
             </div>
 
-            <!-- Dzikir Pagi -->
-            <div class="check-item-card" data-key="dzikirPagi" data-cat="lain">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Dzikir Pagi</span>
-                  <span class="check-detail">Al-Ma'tsurat / doa pagi</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Dzikir Petang -->
-            <div class="check-item-card" data-key="dzikirPetang" data-cat="lain">
-              <div class="check-left">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="check-text">
-                  <span class="check-name">Dzikir Petang</span>
-                  <span class="check-detail">Doa perlindungan petang</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- SECTION 4: AL-QUR'AN (TADARUS, HAFALAN, TADABBUR) -->
-        <section class="section-card quran-card">
-          <div class="section-header">
-            <div class="section-title-wrap">
-              <span class="section-icon">📖</span>
-              <div>
-                <h3 class="section-title">Al-Qur'an Harian</h3>
-                <p class="section-subtitle">1 'Ain Tadarus, 5 Ayat Hafalan, & Pemahaman</p>
-              </div>
-            </div>
-            <span class="section-counter" id="badge-quran">0/3</span>
-          </div>
-
-          <div class="quran-modules">
-            <!-- 1. Tadarus 1 'ain -->
-            <div class="quran-module-item">
-              <div class="quran-check-header" data-key="tadarusDone">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="quran-title-info">
-                  <span class="quran-label">Tadarus Al-Qur'an</span>
-                  <span class="target-tag">Target: 1 'Ain / Hari</span>
-                </div>
-              </div>
-              <div class="quran-inputs-row">
-                <div class="input-field-group">
-                  <label for="quran-tadarus-surah">Nama Surah</label>
-                  <input type="text" id="quran-tadarus-surah" placeholder="Contoh: Al-Baqarah" list="surah-list">
-                </div>
-                <div class="input-field-group input-narrow">
-                  <label for="quran-tadarus-ain">'Ain / Ruku' ke-</label>
-                  <input type="number" id="quran-tadarus-ain" min="1" placeholder="1">
-                </div>
-              </div>
-            </div>
-
-            <!-- 2. Hafalan 5 ayat -->
-            <div class="quran-module-item">
+            <div class="quran-module-item hafalan-per-ayat-card">
+              <!-- Header Checkbox -->
               <div class="quran-check-header" data-key="hafalanDone">
                 <div class="custom-checkbox">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
                 <div class="quran-title-info">
-                  <span class="quran-label">Hafalan Baru / Muroja'ah</span>
-                  <span class="target-tag">Target: 5 Ayat / Hari</span>
+                  <span class="quran-label">Target Hafalan Hari Ini Selesai / Disetorkan</span>
+                  <span class="target-tag highlight" id="hafalan-count-tag">0 Ayat Selesai</span>
                 </div>
               </div>
+
+              <!-- Input Surah & Status -->
               <div class="quran-inputs-row">
                 <div class="input-field-group">
-                  <label for="quran-hafalan-surah">Surah Dihafal</label>
-                  <input type="text" id="quran-hafalan-surah" placeholder="Contoh: An-Naba" list="surah-list">
+                  <label for="quran-hafalan-surah">Surah Yang Dihafal</label>
+                  <input type="text" id="quran-hafalan-surah" placeholder="Contoh: An-Naba, Al-Mulk..." list="surah-list">
                 </div>
-                <div class="input-field-group input-narrow">
-                  <label for="quran-hafalan-ayat">Ayat</label>
-                  <input type="text" id="quran-hafalan-ayat" placeholder="1-5">
+                <div class="input-field-group">
+                  <label for="hafalan-status-select">Metode / Status</label>
+                  <select id="hafalan-status-select" class="custom-select-input">
+                    <option value="ziyadah">🟢 Ziyadah (Hafalan Baru)</option>
+                    <option value="murojaah">🔵 Muroja'ah (Mengulang)</option>
+                    <option value="mutqin">🟡 Mutqin (Uji Kelancaran)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Rentang Ayat Per Ayat Input -->
+              <div class="hafalan-range-inputs">
+                <div class="input-field-group">
+                  <label for="hafalan-ayat-start">Ayat Mulai</label>
+                  <input type="number" id="hafalan-ayat-start" min="1" placeholder="1">
+                </div>
+                <div class="input-field-group">
+                  <label for="hafalan-ayat-end">Ayat Selesai</label>
+                  <input type="number" id="hafalan-ayat-end" min="1" placeholder="5">
+                </div>
+                <div class="input-field-group" style="align-self: flex-end;">
+                  <button type="button" id="btn-build-verse-tracker" class="btn-build-verses">
+                    <span>⚡ Buka Checklist Ayat</span>
+                  </button>
+                </div>
+              </div>
+              <input type="hidden" id="quran-hafalan-ayat">
+
+              <!-- Dynamic Interactive Verse Tracker Container -->
+              <div class="hafalan-verse-tracker-box" id="hafalan-tracker-wrapper">
+                <div class="tracker-header">
+                  <span class="tracker-title">Checklist Hafalan Tiap Ayat:</span>
+                  <span class="tracker-hint">Klik nomor ayat saat telah lancar dihafal</span>
+                </div>
+                <div class="verse-chips-grid" id="hafalan-verse-chips">
+                  <!-- Dynamically rendered verse chips -->
+                  <div class="empty-tracker-notice">Pilih surah dan rentang ayat di atas, lalu klik <strong>Buka Checklist Ayat</strong>.</div>
+                </div>
+              </div>
+
+              <!-- Quick Audio Listen -->
+              <div class="hafalan-audio-helpers">
+                <button type="button" id="btn-listen-hafalan-surah" class="btn-inline-action">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                  <span>Dengarkan Murottal Surah Ini Sebelum Menghafal ➔</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Level 5 Navigation Footer -->
+            <div class="level-nav-footer">
+              <button type="button" class="btn-level-prev" data-goto="4">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Level 4: Shaum Sunnah</span>
+              </button>
+              <button type="button" class="btn-level-next" data-goto="6">
+                <span>Lanjut ke Muhasabah & Refleksi</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- STEP 6: MUHASABAH & JURNAL REFLEKSI -->
+        <!-- ========================================== -->
+        <div class="level-panel" data-level="6" id="panel-level-6">
+          <!-- SECTION: IBADAH & AMALAN LAIN -->
+          <section class="section-card">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="section-icon">🌿</span>
+                <div>
+                  <h3 class="section-title">Ibadah & Amalan Lain</h3>
+                  <p class="section-subtitle">Menjaga kesucian rohani dan ketenangan batin</p>
+                </div>
+              </div>
+              <span class="section-counter" id="badge-lain">0/4</span>
+            </div>
+
+            <div class="checklist-grid grid-2">
+              <!-- Wudhu -->
+              <div class="check-item-card" data-key="wudhu" data-cat="lain">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Menjaga Wudhu</span>
+                    <span class="check-detail">Sebelum tidur / dawam</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sedekah -->
+              <div class="check-item-card" data-key="sedekah" data-cat="lain">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Sedekah Subuh</span>
+                    <span class="check-detail">Kebaikan & infaq</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dzikir Pagi -->
+              <div class="check-item-card" data-key="dzikirPagi" data-cat="lain">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Dzikir Pagi</span>
+                    <span class="check-detail">Al-Ma'tsurat / doa pagi</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dzikir Petang -->
+              <div class="check-item-card" data-key="dzikirPetang" data-cat="lain">
+                <div class="check-left">
+                  <div class="custom-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="check-text">
+                    <span class="check-name">Dzikir Petang</span>
+                    <span class="check-detail">Doa perlindungan petang</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SECTION: JURNAL & REFLEKSI HARIAN -->
+          <section class="section-card">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <span class="section-icon">📝</span>
+                <div>
+                  <h3 class="section-title">Jurnal & Refleksi Harian</h3>
+                  <p class="section-subtitle">Muhasabah diri dan perbaiki niat untuk esok hari</p>
                 </div>
               </div>
             </div>
 
-            <!-- 3. Pahami arti & Tadabbur -->
-            <div class="quran-module-item">
-              <div class="quran-check-header" data-key="tadabburDone">
-                <div class="custom-checkbox">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="quran-title-info">
-                  <span class="quran-label">Pahami Arti & Tadabbur</span>
-                  <span class="target-tag highlight">Pelajaran Utama</span>
-                </div>
-              </div>
-              <div class="tadabbur-box">
-                <textarea id="quran-tadabbur-text" rows="3" placeholder="Tuliskan hikmah, arti, atau pelajaran utama yang kamu peroleh dari ayat yang dibaca/dihafal hari ini..."></textarea>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- SECTION 5: JURNAL & REFLEKSI HARIAN -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-title-wrap">
-              <span class="section-icon">📝</span>
-              <div>
-                <h3 class="section-title">Jurnal & Refleksi Harian</h3>
-                <p class="section-subtitle">Muhasabah diri dan perbaiki niat</p>
+            <!-- Spiritual Mood Selector -->
+            <div class="mood-selector-container">
+              <label class="input-label-sm">Kondisi Hati Hari Ini:</label>
+              <div class="mood-chips">
+                <button type="button" class="mood-chip" data-mood="bersyukur">
+                  <span class="mood-emoji">🤲</span>
+                  <span>Bersyukur</span>
+                </button>
+                <button type="button" class="mood-chip" data-mood="tenang">
+                  <span class="mood-emoji">🌿</span>
+                  <span>Tenang</span>
+                </button>
+                <button type="button" class="mood-chip" data-mood="semangat">
+                  <span class="mood-emoji">⚡</span>
+                  <span>Semangat</span>
+                </button>
+                <button type="button" class="mood-chip" data-mood="butuh-doa">
+                  <span class="mood-emoji">💧</span>
+                  <span>Butuh Doa</span>
+                </button>
+                <button type="button" class="mood-chip" data-mood="muhasabah">
+                  <span class="mood-emoji">🌙</span>
+                  <span>Muhasabah</span>
+                </button>
               </div>
             </div>
-          </div>
 
-          <!-- Spiritual Mood Selector -->
-          <div class="mood-selector-container">
-            <label class="input-label-sm">Kondisi Hati Hari Ini:</label>
-            <div class="mood-chips">
-              <button type="button" class="mood-chip" data-mood="bersyukur">
-                <span class="mood-emoji">🤲</span>
-                <span>Bersyukur</span>
+            <!-- Catatan / Refleksi -->
+            <div class="journal-field-group">
+              <label for="journal-notes" class="journal-field-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <span>Catatan & Refleksi Ibadah Hari Ini:</span>
+              </label>
+              <textarea id="journal-notes" rows="4" placeholder="Apa saja nikmat Allah hari ini yang kamu rasakan? Apakah ada ibadah yang terlewat atau ingin diperbaiki?"></textarea>
+            </div>
+
+            <!-- Target & Niat Esok -->
+            <div class="journal-field-group">
+              <label for="journal-target-besok" class="journal-field-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 12 8"></polygon></svg>
+                <span>Target & Niat Ibadah untuk Besok:</span>
+              </label>
+              <textarea id="journal-target-besok" rows="2" placeholder="Contoh: Sholat subuh di masjid, selesaikan tadarus surat Al-Kahfi, bangun sholat Tahajud..."></textarea>
+            </div>
+
+            <!-- Step 6 Navigation Footer -->
+            <div class="level-nav-footer">
+              <button type="button" class="btn-level-prev" data-goto="5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Level 5: Hafalan Quran</span>
               </button>
-              <button type="button" class="mood-chip" data-mood="tenang">
-                <span class="mood-emoji">🌿</span>
-                <span>Tenang</span>
-              </button>
-              <button type="button" class="mood-chip" data-mood="semangat">
-                <span class="mood-emoji">⚡</span>
-                <span>Semangat</span>
-              </button>
-              <button type="button" class="mood-chip" data-mood="butuh-doa">
-                <span class="mood-emoji">💧</span>
-                <span>Butuh Doa</span>
-              </button>
-              <button type="button" class="mood-chip" data-mood="muhasabah">
-                <span class="mood-emoji">🌙</span>
-                <span>Muhasabah</span>
+              <button type="button" class="btn-level-next finish-btn" id="btn-finish-journal-flow">
+                <span>Simpan Catatan Ibadah ✓</span>
               </button>
             </div>
-          </div>
-
-          <!-- Catatan / Refleksi -->
-          <div class="journal-field-group">
-            <label for="journal-notes" class="journal-field-label">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-              <span>Catatan & Refleksi Ibadah Hari Ini:</span>
-            </label>
-            <textarea id="journal-notes" rows="4" placeholder="Apa saja nikmat Allah hari ini yang kamu rasakan? Apakah ada ibadah yang terlewat atau ingin diperbaiki?"></textarea>
-          </div>
-
-          <!-- Target & Niat Esok -->
-          <div class="journal-field-group">
-            <label for="journal-target-besok" class="journal-field-label">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 12 8"></polygon></svg>
-              <span>Target & Niat Ibadah untuk Besok:</span>
-            </label>
-            <textarea id="journal-target-besok" rows="2" placeholder="Contoh: Sholat subuh di masjid, selesaikan tadarus surat Al-Kahfi, bangun sholat Tahajud..."></textarea>
-          </div>
-        </section>
+          </section>
+        </div>
 
         <!-- ACTION BUTTONS -->
         <div class="action-bar-bottom">
@@ -1417,6 +2084,56 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Level Terkunci -->
+  <div id="modal-level-locked" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-locked-card">
+      <div class="modal-header-clean">
+        <div class="locked-modal-badge">
+          <span class="locked-modal-icon">🔒</span>
+        </div>
+        <h3 class="modal-clean-title" id="locked-modal-title">Level Masih Terkunci!</h3>
+        <button type="button" class="btn-close-modal" id="btn-close-modal-locked" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="locked-modal-body">
+        <p class="locked-modal-desc" id="locked-modal-desc">
+          Tingkatan ini belum bisa dibuka. Selesaikan <strong>Sholat Wajib 5 waktu selama 10 hari berturut-turut tanpa ada yang bolong</strong> untuk membuka tingkatan selanjutnya.
+        </p>
+
+        <div class="locked-modal-stats-card">
+          <div class="locked-stat-item">
+            <span class="locked-stat-sub">Rekor Konsistensi Saat Ini:</span>
+            <span class="locked-stat-val text-gold" id="locked-modal-current-streak">0 Hari</span>
+          </div>
+          <div class="locked-stat-divider">/</div>
+          <div class="locked-stat-item">
+            <span class="locked-stat-sub">Syarat Membuka Kunci:</span>
+            <span class="locked-stat-val text-emerald">10 Hari Penuh</span>
+          </div>
+        </div>
+
+        <div class="locked-quote-box">
+          <span class="quote-icon">“</span>
+          <p class="quote-text">
+            "Amalan yang paling dicintai oleh Allah adalah amalan yang berkelanjutan (istiqomah) walaupun sedikit."
+          </p>
+          <span class="quote-by">(HR. Bukhari no. 6464 &amp; Muslim no. 782)</span>
+        </div>
+      </div>
+
+      <div class="modal-footer-clean">
+        <button type="button" class="btn-primary" id="btn-locked-back-to-level1">
+          <span>InsyaAllah Siap Istiqomah! (Kembali ke Level 1)</span>
+        </button>
+        <button type="button" class="btn-secondary btn-sim-unlock-from-modal" id="btn-sim-unlock-from-modal">
+          <span>⚡ Buka Kunci (Simulasi 10 Hari)</span>
+        </button>
       </div>
     </div>
   </div>

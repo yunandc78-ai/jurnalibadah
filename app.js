@@ -739,6 +739,11 @@
         tahajud: false,
         witir: false
       },
+      shaum: {
+        puasaHariIni: false,
+        jenis: 'senin-kamis',
+        catatan: ''
+      },
       lain: {
         wudhu: false,
         sedekah: false,
@@ -752,6 +757,10 @@
         hafalanDone: false,
         hafalanSurah: '',
         hafalanAyat: '',
+        hafalanAyatStart: '',
+        hafalanAyatEnd: '',
+        hafalanAyatList: [],
+        hafalanStatus: 'ziyadah',
         tadabburDone: false,
         tadabburText: ''
       },
@@ -847,6 +856,34 @@
     }
     if (!db[key].sunnah) {
       db[key].sunnah = { dhuha: false, tahajud: false, witir: false };
+    }
+    // Backward compatibility for shaum
+    if (!db[key].shaum) {
+      db[key].shaum = {
+        puasaHariIni: false,
+        jenis: 'senin-kamis',
+        catatan: ''
+      };
+    }
+    // Backward compatibility for hafalan
+    if (!db[key].quran) {
+      db[key].quran = {
+        tadarusDone: false,
+        tadarusSurah: '',
+        tadarusAin: '',
+        hafalanDone: false,
+        hafalanSurah: '',
+        hafalanAyat: '',
+        hafalanAyatStart: '',
+        hafalanAyatEnd: '',
+        hafalanAyatList: [],
+        hafalanStatus: 'ziyadah',
+        tadabburDone: false,
+        tadabburText: ''
+      };
+    } else {
+      if (!Array.isArray(db[key].quran.hafalanAyatList)) db[key].quran.hafalanAyatList = [];
+      if (!db[key].quran.hafalanStatus) db[key].quran.hafalanStatus = 'ziyadah';
     }
     return db[key];
   }
@@ -996,7 +1033,12 @@
 
   // --- Calculation Helpers ---
   function calculateDayStats(dayData) {
-    if (!dayData) return { totalCompleted: 0, percentage: 0, wajibCount: 0, rawatibCount: 0, sunnahCount: 0, lainCount: 0, quranCount: 0 };
+    if (!dayData) return { 
+      totalCompleted: 0, percentage: 0, wajibCount: 0, rawatibCount: 0, 
+      sunnahCount: 0, totalSunnahCount: 0, shaumCount: 0, hafalanCount: 0,
+      bacaQuranCount: 0, lainCount: 0, quranCount: 0, levelRank: 0, 
+      rankTitle: 'Memulai Level 1', rankIcon: '🌱' 
+    };
 
     let wajibCount = 0;
     ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'].forEach(key => {
@@ -1020,22 +1062,65 @@
       if (dayData.sunnah && dayData.sunnah[key]) sunnahCount++;
     });
 
+    const totalSunnahCount = rawatibCount + sunnahCount;
+
     let lainCount = 0;
     ['wudhu', 'sedekah', 'dzikirPagi', 'dzikirPetang'].forEach(key => {
       if (dayData.lain && dayData.lain[key]) lainCount++;
     });
 
-    let quranCount = 0;
-    if (dayData.quran) {
-      if (dayData.quran.tadarusDone) quranCount++;
-      if (dayData.quran.hafalanDone) quranCount++;
-      if (dayData.quran.tadabburDone) quranCount++;
+    const bacaQuranCount = (dayData.quran && dayData.quran.tadarusDone) ? 1 : 0;
+    const shaumCount = (dayData.shaum && dayData.shaum.puasaHariIni) ? 1 : 0;
+    const hafalanCount = (dayData.quran && dayData.quran.hafalanDone) ? 1 : 0;
+    const tadabburCount = (dayData.quran && dayData.quran.tadabburDone) ? 1 : 0;
+
+    let quranCount = bacaQuranCount + hafalanCount + tadabburCount;
+
+    const totalCompleted = wajibCount + rawatibCount + sunnahCount + shaumCount + bacaQuranCount + hafalanCount + lainCount;
+    const percentage = Math.min(100, Math.round((totalCompleted / TOTAL_DAILY_ITEMS) * 100));
+
+    // Daily Level Rank Evaluation
+    const isLevel1 = wajibCount === 5;
+    const isLevel2 = isLevel1 && totalSunnahCount >= 1;
+    const isLevel3 = isLevel2 && bacaQuranCount === 1;
+    const isLevel4 = isLevel3 && shaumCount === 1;
+    const isLevel5 = (isLevel4 || (isLevel3 && hafalanCount === 1)) && hafalanCount === 1;
+
+    let levelRank = 0;
+    let rankTitle = 'Memulai Level 1: Sholat Wajib';
+    let rankIcon = '🌱';
+
+    if (isLevel5) {
+      levelRank = 5;
+      rankTitle = 'Level 5 Sempurna: Penghafal Al-Qur\'an';
+      rankIcon = '👑';
+    } else if (isLevel4) {
+      levelRank = 4;
+      rankTitle = 'Level 4: Jiwa Terjaga Shaum Sunnah';
+      rankIcon = '🌙';
+    } else if (isLevel3) {
+      levelRank = 3;
+      rankTitle = 'Level 3: Cahaya Tilawah Al-Qur\'an';
+      rankIcon = '📖';
+    } else if (isLevel2) {
+      levelRank = 2;
+      rankTitle = 'Level 2: Sholat Sunnah Bersemai';
+      rankIcon = '✨';
+    } else if (isLevel1) {
+      levelRank = 1;
+      rankTitle = 'Level 1: Sholat Wajib Lengkap!';
+      rankIcon = '🕌';
+    } else if (wajibCount > 0) {
+      levelRank = 0;
+      rankTitle = `Level 1 Berjalan (${wajibCount}/5 Wajib)`;
+      rankIcon = '🕌';
     }
 
-    const totalCompleted = wajibCount + rawatibCount + sunnahCount + lainCount + quranCount;
-    const percentage = Math.round((totalCompleted / TOTAL_DAILY_ITEMS) * 100);
-
-    return { totalCompleted, percentage, wajibCount, rawatibCount, sunnahCount, lainCount, quranCount };
+    return { 
+      totalCompleted, percentage, wajibCount, rawatibCount, sunnahCount, 
+      totalSunnahCount, shaumCount, hafalanCount, bacaQuranCount, lainCount, 
+      quranCount, levelRank, rankTitle, rankIcon 
+    };
   }
 
   function calculateStreak() {
@@ -1066,6 +1151,783 @@
     return streak;
   }
 
+  // --- Step-by-Step Level Progression & Locking System ---
+  let pendingLockedLevel = 2;
+
+  function getLevelProgressionStats() {
+    const today = new Date();
+    const todayKey = toDateKey(today);
+    const activeUser = getActiveUser();
+
+    // Helper to compute backward consecutive streak for a condition
+    function computeConsecutive(conditionFn) {
+      const todayData = db[todayKey];
+      const todayStats = todayData ? calculateDayStats(todayData) : null;
+      const isTodayMet = todayStats && conditionFn(todayStats, todayData);
+
+      let checkDate = new Date(today);
+      if (!isTodayMet) {
+        checkDate.setDate(checkDate.getDate() - 1);
+      }
+
+      let count = 0;
+      const runner = new Date(checkDate);
+      for (let i = 0; i < 365; i++) {
+        const k = toDateKey(runner);
+        const dayData = db[k];
+        const st = dayData ? calculateDayStats(dayData) : null;
+        if (st && conditionFn(st, dayData)) {
+          count++;
+          runner.setDate(runner.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      return count;
+    }
+
+    // Helper to compute historical max consecutive streak
+    function computeMaxConsecutive(conditionFn) {
+      let max = 0;
+      let run = 0;
+      const allDateKeys = Object.keys(db).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
+      allDateKeys.forEach(k => {
+        const st = calculateDayStats(db[k]);
+        if (st && conditionFn(st, db[k])) {
+          run++;
+          if (run > max) max = run;
+        } else {
+          run = 0;
+        }
+      });
+      return max;
+    }
+
+    // ==========================================
+    // LEVEL 1: SHOLAT WAJIB (Foundation)
+    // Requirement: 10 consecutive days of 5/5 Sholat Wajib
+    // ==========================================
+    const l1Condition = (st) => st.wajibCount === 5;
+    const l1Consecutive = computeConsecutive(l1Condition);
+    const l1MaxConsecutive = computeMaxConsecutive(l1Condition);
+    const l1Simulated = !!db._level2Unlocked || !!(activeUser && activeUser.level2Unlocked);
+    const l1Cleared = (l1Consecutive >= 10 || l1MaxConsecutive >= 10 || l1Simulated);
+
+    const l1Nodes = [];
+    for (let i = 9; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const k = toDateKey(d);
+      const dData = db[k];
+      const st = dData ? calculateDayStats(dData) : null;
+      const wCount = st ? st.wajibCount : 0;
+      l1Nodes.push({
+        dayIndex: 10 - i,
+        dateKey: k,
+        dateLabel: `${d.getDate()}/${d.getMonth() + 1}`,
+        dayName: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'][d.getDay()],
+        isCompleted: wCount === 5,
+        isToday: k === todayKey,
+        valText: `${wCount}/5`
+      });
+    }
+
+    // ==========================================
+    // LEVEL 2: SHOLAT SUNNAH
+    // Requirement: Level 1 cleared + 10 consecutive days with >= 1 Sholat Sunnah
+    // ==========================================
+    const l2Unlocked = l1Cleared;
+    const l2Condition = (st) => st.totalSunnahCount >= 1;
+    const l2Consecutive = computeConsecutive(l2Condition);
+    const l2MaxConsecutive = computeMaxConsecutive(l2Condition);
+    const l2Simulated = !!db._level3Unlocked || !!(activeUser && activeUser.level3Unlocked);
+    const l2Cleared = l2Unlocked && (l2Consecutive >= 10 || l2MaxConsecutive >= 10 || l2Simulated);
+
+    const l2Nodes = [];
+    for (let i = 9; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const k = toDateKey(d);
+      const dData = db[k];
+      const st = dData ? calculateDayStats(dData) : null;
+      const sCount = st ? st.totalSunnahCount : 0;
+      l2Nodes.push({
+        dayIndex: 10 - i,
+        dateKey: k,
+        dateLabel: `${d.getDate()}/${d.getMonth() + 1}`,
+        dayName: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'][d.getDay()],
+        isCompleted: sCount >= 1,
+        isToday: k === todayKey,
+        valText: sCount > 0 ? `${sCount}` : '○'
+      });
+    }
+
+    // ==========================================
+    // LEVEL 3: BACA AL-QUR'AN
+    // Requirement: Level 2 cleared + 10 consecutive days with Tilawah / Tadarus
+    // ==========================================
+    const l3Unlocked = l2Cleared;
+    const l3Condition = (st) => st.bacaQuranCount >= 1;
+    const l3Consecutive = computeConsecutive(l3Condition);
+    const l3MaxConsecutive = computeMaxConsecutive(l3Condition);
+    const l3Simulated = !!db._level4Unlocked || !!(activeUser && activeUser.level4Unlocked);
+    const l3Cleared = l3Unlocked && (l3Consecutive >= 10 || l3MaxConsecutive >= 10 || l3Simulated);
+
+    const l3Nodes = [];
+    for (let i = 9; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const k = toDateKey(d);
+      const dData = db[k];
+      const st = dData ? calculateDayStats(dData) : null;
+      const qDone = st ? (st.bacaQuranCount >= 1) : false;
+      l3Nodes.push({
+        dayIndex: 10 - i,
+        dateKey: k,
+        dateLabel: `${d.getDate()}/${d.getMonth() + 1}`,
+        dayName: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'][d.getDay()],
+        isCompleted: qDone,
+        isToday: k === todayKey,
+        valText: qDone ? '✓' : '○'
+      });
+    }
+
+    // ==========================================
+    // LEVEL 4: SHAUM SUNNAH
+    // Requirement: Level 3 cleared + 4 days of Shaum Sunnah logged
+    // ==========================================
+    const l4Unlocked = l3Cleared;
+    let l4TotalDays = 0;
+    const allDateKeys = Object.keys(db).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
+    allDateKeys.forEach(k => {
+      const st = calculateDayStats(db[k]);
+      if (st && st.shaumCount >= 1) l4TotalDays++;
+    });
+    const l4Simulated = !!db._level5Unlocked || !!(activeUser && activeUser.level5Unlocked);
+    const l4Cleared = l4Unlocked && (l4TotalDays >= 4 || l4Simulated);
+
+    const l4Nodes = [];
+    for (let i = 1; i <= 4; i++) {
+      const isDone = l4Simulated || (l4TotalDays >= i);
+      l4Nodes.push({
+        dayIndex: i,
+        isCompleted: isDone,
+        valText: isDone ? '✓' : `${i}/4`
+      });
+    }
+
+    // ==========================================
+    // LEVEL 5: HAFALAN AL-QUR'AN PER AYAT
+    // Requirement: Level 4 cleared (Pinnacle rank)
+    // ==========================================
+    const l5Unlocked = l4Cleared;
+
+    return {
+      level1: {
+        isUnlocked: true,
+        isCleared: l1Cleared,
+        isSimulated: l1Simulated,
+        consecutive: l1Consecutive,
+        maxConsecutive: l1MaxConsecutive,
+        required: 10,
+        remaining: Math.max(0, 10 - l1Consecutive),
+        percent: Math.min(100, Math.round((l1Consecutive / 10) * 100)),
+        nodes: l1Nodes
+      },
+      level2: {
+        isUnlocked: l2Unlocked,
+        isCleared: l2Cleared,
+        isSimulated: l2Simulated,
+        consecutive: l2Consecutive,
+        maxConsecutive: l2MaxConsecutive,
+        required: 10,
+        remaining: Math.max(0, 10 - l2Consecutive),
+        percent: Math.min(100, Math.round((l2Consecutive / 10) * 100)),
+        nodes: l2Nodes
+      },
+      level3: {
+        isUnlocked: l3Unlocked,
+        isCleared: l3Cleared,
+        isSimulated: l3Simulated,
+        consecutive: l3Consecutive,
+        maxConsecutive: l3MaxConsecutive,
+        required: 10,
+        remaining: Math.max(0, 10 - l3Consecutive),
+        percent: Math.min(100, Math.round((l3Consecutive / 10) * 100)),
+        nodes: l3Nodes
+      },
+      level4: {
+        isUnlocked: l4Unlocked,
+        isCleared: l4Cleared,
+        isSimulated: l4Simulated,
+        completedDays: Math.min(4, l4TotalDays),
+        required: 4,
+        remaining: Math.max(0, 4 - l4TotalDays),
+        percent: Math.min(100, Math.round((Math.min(4, l4TotalDays) / 4) * 100)),
+        nodes: l4Nodes
+      },
+      level5: {
+        isUnlocked: l5Unlocked,
+        isCleared: false
+      }
+    };
+  }
+
+  // Backward compatibility alias for single-level calls
+  function getWajibConsistencyStats() {
+    const p = getLevelProgressionStats();
+    return {
+      consecutive: p.level1.consecutive,
+      maxConsecutive: p.level1.maxConsecutive,
+      isLevel2Unlocked: p.level2.isUnlocked,
+      isSimulatedUnlocked: p.level1.isSimulated,
+      historyDays: p.level1.nodes,
+      required: 10,
+      remaining: p.level1.remaining,
+      percent: p.level1.percent
+    };
+  }
+
+  // Multi-level simulation handler
+  function simulateUnlockLevel(levelNum, doUnlock) {
+    const today = new Date();
+    const lvl = parseInt(levelNum, 10);
+
+    if (lvl === 1 || lvl === 2) {
+      if (doUnlock) {
+        for (let i = 9; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const k = toDateKey(d);
+          if (!db[k]) db[k] = getDefaultDayData(k);
+          ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'].forEach(prayer => {
+            if (!db[k].wajib[prayer]) db[k].wajib[prayer] = { done: true, jamaah: true };
+            db[k].wajib[prayer].done = true;
+          });
+          db[k].updatedAt = Date.now();
+        }
+        db._level2Unlocked = true;
+        saveDatabase();
+        triggerConfetti();
+        playCompleteCelebrationSound();
+        showToast('🎉 10 Hari Sholat Wajib lengkap! Level 2 (Sholat Sunnah) kini TERBUKA!');
+      } else {
+        db._level2Unlocked = false;
+        db._level3Unlocked = false;
+        db._level4Unlocked = false;
+        db._level5Unlocked = false;
+        saveDatabase();
+        showToast('🔄 Level 2 & tingkat selanjutnya dikunci kembali.');
+        playTone(320, 'sine', 0.1, 0.1);
+      }
+    } else if (lvl === 3) {
+      if (doUnlock) {
+        db._level2Unlocked = true;
+        for (let i = 9; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const k = toDateKey(d);
+          if (!db[k]) db[k] = getDefaultDayData(k);
+          if (!db[k].sunnah) db[k].sunnah = { dhuha: true, tahajud: false, witir: true };
+          else { db[k].sunnah.dhuha = true; db[k].sunnah.witir = true; }
+          if (!db[k].rawatib) db[k].rawatib = { qobliyahSubuh: true, badiyahDzuhur: true };
+          else { db[k].rawatib.qobliyahSubuh = true; db[k].rawatib.badiyahDzuhur = true; }
+          db[k].updatedAt = Date.now();
+        }
+        db._level3Unlocked = true;
+        saveDatabase();
+        triggerConfetti();
+        playCompleteCelebrationSound();
+        showToast('🎉 10 Hari Sholat Sunnah lengkap! Level 3 (Baca Al-Qur\'an) kini TERBUKA!');
+      } else {
+        db._level3Unlocked = false;
+        db._level4Unlocked = false;
+        db._level5Unlocked = false;
+        saveDatabase();
+        showToast('🔄 Level 3 & tingkat selanjutnya dikunci kembali.');
+        playTone(320, 'sine', 0.1, 0.1);
+      }
+    } else if (lvl === 4) {
+      if (doUnlock) {
+        db._level2Unlocked = true;
+        db._level3Unlocked = true;
+        for (let i = 9; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const k = toDateKey(d);
+          if (!db[k]) db[k] = getDefaultDayData(k);
+          if (!db[k].quran) db[k].quran = {};
+          db[k].quran.tadarusDone = true;
+          db[k].quran.tadarusSurah = 'Al-Baqarah';
+          db[k].quran.tadarusAin = '1';
+          db[k].updatedAt = Date.now();
+        }
+        db._level4Unlocked = true;
+        saveDatabase();
+        triggerConfetti();
+        playCompleteCelebrationSound();
+        showToast('🎉 10 Hari Tilawah Al-Qur\'an lengkap! Level 4 (Shaum Sunnah) kini TERBUKA!');
+      } else {
+        db._level4Unlocked = false;
+        db._level5Unlocked = false;
+        saveDatabase();
+        showToast('🔄 Level 4 & tingkat selanjutnya dikunci kembali.');
+        playTone(320, 'sine', 0.1, 0.1);
+      }
+    } else if (lvl === 5) {
+      if (doUnlock) {
+        db._level2Unlocked = true;
+        db._level3Unlocked = true;
+        db._level4Unlocked = true;
+        for (let i = 3; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - (i * 3));
+          const k = toDateKey(d);
+          if (!db[k]) db[k] = getDefaultDayData(k);
+          if (!db[k].shaum) db[k].shaum = {};
+          db[k].shaum.puasaHariIni = true;
+          db[k].shaum.jenis = 'senin-kamis';
+          db[k].updatedAt = Date.now();
+        }
+        db._level5Unlocked = true;
+        saveDatabase();
+        triggerConfetti();
+        playCompleteCelebrationSound();
+        showToast('👑 MasyaAllah! 4 Hari Shaum Sunnah tuntas. Level 5 (Hafalan Quran) kini TERBUKA!');
+      } else {
+        db._level5Unlocked = false;
+        saveDatabase();
+        showToast('🔄 Level 5 dikunci kembali.');
+        playTone(320, 'sine', 0.1, 0.1);
+      }
+    }
+
+    renderJournalForm();
+    renderStatsTab();
+  }
+
+  function simulateWajib10DaysStreak(doUnlock) {
+    simulateUnlockLevel(2, doUnlock);
+  }
+
+  // --- Render Visual Consistency Cards for All Levels ---
+  function renderAllConsistencyCards(progression) {
+    // 1. Level 1 : Sholat Wajib Card
+    const l1 = progression.level1;
+    const card1 = document.getElementById('wajib-consistency-card');
+    if (card1) {
+      card1.classList.toggle('unlocked-all', l1.isCleared);
+      const lockStatus1 = document.getElementById('consistency-lock-status');
+      const lockIcon1 = document.getElementById('consistency-lock-icon');
+      const lockLabel1 = document.getElementById('consistency-lock-label');
+      const streakText1 = document.getElementById('consistency-streak-text');
+      const barFill1 = document.getElementById('consistency-progress-bar-fill');
+      const msgIcon1 = document.getElementById('consistency-msg-icon');
+      const msgText1 = document.getElementById('consistency-msg-text');
+      const stepsGrid1 = document.getElementById('consistency-steps-grid');
+      const btnSim1 = document.getElementById('btn-sim-unlock-10d');
+      const btnReset1 = document.getElementById('btn-sim-reset-10d');
+
+      if (lockStatus1) lockStatus1.className = `consistency-lock-status ${l1.isCleared ? 'unlocked' : ''}`;
+      if (lockIcon1) lockIcon1.textContent = l1.isCleared ? '🔓' : '🔒';
+      if (lockLabel1) {
+        lockLabel1.textContent = l1.isCleared 
+          ? 'Level 2 Terbuka! (10 Hari Sholat Wajib Tuntas)' 
+          : `Level 2 Terkunci (Kurang ${l1.remaining} Hari)`;
+      }
+      if (streakText1) streakText1.textContent = `${l1.consecutive} / 10 Hari (${l1.percent}%)`;
+      if (barFill1) barFill1.style.width = `${l1.percent}%`;
+
+      if (msgText1 && msgIcon1) {
+        if (l1.isCleared) {
+          msgIcon1.textContent = '🌟';
+          msgText1.textContent = 'Alhamdulillah! Anda telah mencapai 10 hari istiqomah sholat fardhu tanpa bolong. Level 2 (Sholat Sunnah) kini telah terbuka!';
+        } else if (l1.consecutive >= 7) {
+          msgIcon1.textContent = '🔥';
+          msgText1.textContent = `Luar biasa! Sudah ${l1.consecutive} hari berturut-turut sholat fardhu penuh. Tinggal ${l1.remaining} hari lagi menuju pembukaan Level 2!`;
+        } else {
+          msgIcon1.textContent = '🌱';
+          msgText1.textContent = 'Tunaikan 5 waktu sholat fardhu setiap hari tanpa bolong selama 10 hari berturut-turut untuk membuka Level 2.';
+        }
+      }
+
+      if (btnSim1 && btnReset1) {
+        btnSim1.classList.toggle('hidden', l1.isCleared);
+        btnReset1.classList.toggle('hidden', !l1.isCleared);
+      }
+
+      if (stepsGrid1) {
+        stepsGrid1.innerHTML = '';
+        l1.nodes.forEach(item => {
+          const node = document.createElement('div');
+          const isDone = item.isCompleted;
+          const isMissed = !isDone && !item.isToday;
+          let stateClass = isDone ? 'completed' : (item.isToday ? 'active-today' : (isMissed ? 'missed' : ''));
+          node.className = `consistency-node ${stateClass}`;
+          node.title = `${item.dayName}, ${item.dateKey}: ${item.valText} Sholat Wajib`;
+          node.innerHTML = `
+            <span class="node-num">H-${item.dayIndex}</span>
+            <div class="node-icon">${isDone ? '✓' : (item.isToday ? '○' : '✕')}</div>
+            <span class="node-date">${item.dateLabel}</span>
+          `;
+          stepsGrid1.appendChild(node);
+        });
+      }
+    }
+
+    // 2. Level 2 : Sholat Sunnah Card
+    const l2 = progression.level2;
+    const card2 = document.getElementById('sunnah-consistency-card');
+    if (card2) {
+      card2.classList.toggle('unlocked-all', l2.isCleared);
+      const lockStatus2 = document.getElementById('sunnah-lock-status');
+      const lockIcon2 = document.getElementById('sunnah-lock-icon');
+      const lockLabel2 = document.getElementById('sunnah-lock-label');
+      const streakText2 = document.getElementById('sunnah-streak-text');
+      const barFill2 = document.getElementById('sunnah-progress-bar-fill');
+      const msgIcon2 = document.getElementById('sunnah-msg-icon');
+      const msgText2 = document.getElementById('sunnah-msg-text');
+      const stepsGrid2 = document.getElementById('sunnah-steps-grid');
+      const btnSim2 = document.getElementById('btn-sim-unlock-l3');
+      const btnReset2 = document.getElementById('btn-sim-reset-l3');
+
+      if (lockStatus2) lockStatus2.className = `consistency-lock-status ${l2.isCleared ? 'unlocked' : ''}`;
+      if (lockIcon2) lockIcon2.textContent = l2.isCleared ? '🔓' : '🔒';
+      if (lockLabel2) {
+        lockLabel2.textContent = l2.isCleared 
+          ? 'Level 3 Terbuka! (10 Hari Sholat Sunnah Tuntas)' 
+          : `Level 3 Terkunci (Kurang ${l2.remaining} Hari)`;
+      }
+      if (streakText2) streakText2.textContent = `${l2.consecutive} / 10 Hari (${l2.percent}%)`;
+      if (barFill2) barFill2.style.width = `${l2.percent}%`;
+
+      if (msgText2 && msgIcon2) {
+        if (l2.isCleared) {
+          msgIcon2.textContent = '🌟';
+          msgText2.textContent = 'MasyaAllah! Istiqomah 10 hari sholat sunnah telah tercapai. Level 3 (Baca Al-Qur\'an) kini terbuka!';
+        } else if (l2.consecutive >= 5) {
+          msgIcon2.textContent = '🔥';
+          msgText2.textContent = `Hebat! ${l2.consecutive} hari sholat sunnah beruntun. Kurang ${l2.remaining} hari lagi untuk membuka Level 3.`;
+        } else {
+          msgIcon2.textContent = '✨';
+          msgText2.textContent = 'Amalkan minimal 1 sholat sunnah (Rawatib, Dhuha, Tahajud, atau Witir) setiap hari selama 10 hari berturut-turut.';
+        }
+      }
+
+      if (btnSim2 && btnReset2) {
+        btnSim2.classList.toggle('hidden', l2.isCleared);
+        btnReset2.classList.toggle('hidden', !l2.isCleared);
+      }
+
+      if (stepsGrid2) {
+        stepsGrid2.innerHTML = '';
+        l2.nodes.forEach(item => {
+          const node = document.createElement('div');
+          const isDone = item.isCompleted;
+          const isMissed = !isDone && !item.isToday;
+          let stateClass = isDone ? 'completed' : (item.isToday ? 'active-today' : (isMissed ? 'missed' : ''));
+          node.className = `consistency-node ${stateClass}`;
+          node.title = `${item.dayName}, ${item.dateKey}: ${item.valText} Sholat Sunnah`;
+          node.innerHTML = `
+            <span class="node-num">H-${item.dayIndex}</span>
+            <div class="node-icon gold-icon">${isDone ? '✓' : (item.isToday ? '○' : '✕')}</div>
+            <span class="node-date">${item.dateLabel}</span>
+          `;
+          stepsGrid2.appendChild(node);
+        });
+      }
+    }
+
+    // 3. Level 3 : Baca Quran Card
+    const l3 = progression.level3;
+    const card3 = document.getElementById('quran-consistency-card');
+    if (card3) {
+      card3.classList.toggle('unlocked-all', l3.isCleared);
+      const lockStatus3 = document.getElementById('quran-lock-status');
+      const lockIcon3 = document.getElementById('quran-lock-icon');
+      const lockLabel3 = document.getElementById('quran-lock-label');
+      const streakText3 = document.getElementById('quran-streak-text');
+      const barFill3 = document.getElementById('quran-progress-bar-fill');
+      const msgIcon3 = document.getElementById('quran-msg-icon');
+      const msgText3 = document.getElementById('quran-msg-text');
+      const stepsGrid3 = document.getElementById('quran-steps-grid');
+      const btnSim3 = document.getElementById('btn-sim-unlock-l4');
+      const btnReset3 = document.getElementById('btn-sim-reset-l4');
+
+      if (lockStatus3) lockStatus3.className = `consistency-lock-status ${l3.isCleared ? 'unlocked' : ''}`;
+      if (lockIcon3) lockIcon3.textContent = l3.isCleared ? '🔓' : '🔒';
+      if (lockLabel3) {
+        lockLabel3.textContent = l3.isCleared 
+          ? 'Level 4 Terbuka! (10 Hari Tilawah Tuntas)' 
+          : `Level 4 Terkunci (Kurang ${l3.remaining} Hari)`;
+      }
+      if (streakText3) streakText3.textContent = `${l3.consecutive} / 10 Hari (${l3.percent}%)`;
+      if (barFill3) barFill3.style.width = `${l3.percent}%`;
+
+      if (msgText3 && msgIcon3) {
+        if (l3.isCleared) {
+          msgIcon3.textContent = '🌟';
+          msgText3.textContent = 'Alhamdulillah! Tilawah Al-Qur\'an 10 hari berturut-turut lengkap. Level 4 (Shaum Sunnah) kini terbuka!';
+        } else {
+          msgIcon3.textContent = '📖';
+          msgText3.textContent = 'Bacalah Al-Qur\'an minimal 1 \'ain / 1 halaman setiap hari selama 10 hari berturut-turut tanpa jeda.';
+        }
+      }
+
+      if (btnSim3 && btnReset3) {
+        btnSim3.classList.toggle('hidden', l3.isCleared);
+        btnReset3.classList.toggle('hidden', !l3.isCleared);
+      }
+
+      if (stepsGrid3) {
+        stepsGrid3.innerHTML = '';
+        l3.nodes.forEach(item => {
+          const node = document.createElement('div');
+          const isDone = item.isCompleted;
+          const isMissed = !isDone && !item.isToday;
+          let stateClass = isDone ? 'completed' : (item.isToday ? 'active-today' : (isMissed ? 'missed' : ''));
+          node.className = `consistency-node ${stateClass}`;
+          node.title = `${item.dayName}, ${item.dateKey}: ${isDone ? 'Tilawah Selesai' : 'Belum Tilawah'}`;
+          node.innerHTML = `
+            <span class="node-num">H-${item.dayIndex}</span>
+            <div class="node-icon cyan-icon">${isDone ? '✓' : (item.isToday ? '○' : '✕')}</div>
+            <span class="node-date">${item.dateLabel}</span>
+          `;
+          stepsGrid3.appendChild(node);
+        });
+      }
+    }
+
+    // 4. Level 4 : Shaum Sunnah Card
+    const l4 = progression.level4;
+    const card4 = document.getElementById('shaum-consistency-card');
+    if (card4) {
+      card4.classList.toggle('unlocked-all', l4.isCleared);
+      const lockStatus4 = document.getElementById('shaum-lock-status');
+      const lockIcon4 = document.getElementById('shaum-lock-icon');
+      const lockLabel4 = document.getElementById('shaum-lock-label');
+      const streakText4 = document.getElementById('shaum-streak-text');
+      const barFill4 = document.getElementById('shaum-progress-bar-fill');
+      const msgIcon4 = document.getElementById('shaum-msg-icon');
+      const msgText4 = document.getElementById('shaum-msg-text');
+      const stepsGrid4 = document.getElementById('shaum-steps-grid');
+      const btnSim4 = document.getElementById('btn-sim-unlock-l5');
+      const btnReset4 = document.getElementById('btn-sim-reset-l5');
+
+      if (lockStatus4) lockStatus4.className = `consistency-lock-status ${l4.isCleared ? 'unlocked' : ''}`;
+      if (lockIcon4) lockIcon4.textContent = l4.isCleared ? '🔓' : '🔒';
+      if (lockLabel4) {
+        lockLabel4.textContent = l4.isCleared 
+          ? 'Level 5 Terbuka! (4 Hari Shaum Tuntas)' 
+          : `Level 5 Terkunci (Kurang ${l4.remaining} Hari)`;
+      }
+      if (streakText4) streakText4.textContent = `${l4.completedDays} / 4 Hari (${l4.percent}%)`;
+      if (barFill4) barFill4.style.width = `${l4.percent}%`;
+
+      if (msgText4 && msgIcon4) {
+        if (l4.isCleared) {
+          msgIcon4.textContent = '👑';
+          msgText4.textContent = 'MasyaAllah! Anda telah menyelesaikan 4 hari shaum sunnah. Mahkota Level 5 (Hafalan Quran Per Ayat) kini terbuka!';
+        } else {
+          msgIcon4.textContent = '🌙';
+          msgText4.textContent = 'Tuntaskan shaum sunnah (Senin & Kamis atau Yaumul Bidh 13, 14, 15 H) sebanyak 4 hari untuk membuka Level 5.';
+        }
+      }
+
+      if (btnSim4 && btnReset4) {
+        btnSim4.classList.toggle('hidden', l4.isCleared);
+        btnReset4.classList.toggle('hidden', !l4.isCleared);
+      }
+
+      if (stepsGrid4) {
+        stepsGrid4.innerHTML = '';
+        l4.nodes.forEach(item => {
+          const node = document.createElement('div');
+          const isDone = item.isCompleted;
+          node.className = `consistency-node ${isDone ? 'completed' : ''}`;
+          node.title = `Hari Shaum ke-${item.dayIndex}: ${isDone ? 'Selesai' : 'Belum'}`;
+          node.innerHTML = `
+            <span class="node-num">Hari ke-${item.dayIndex}</span>
+            <div class="node-icon purple-icon">${isDone ? '✓' : '○'}</div>
+            <span class="node-date">${isDone ? 'Tuntas' : 'Target'}</span>
+          `;
+          stepsGrid4.appendChild(node);
+        });
+      }
+    }
+
+    // 5. Level 5 : Pinnacle Card
+    const card5 = document.getElementById('hafalan-pinnacle-card');
+    if (card5) {
+      card5.classList.toggle('unlocked-all', progression.level5.isUnlocked);
+    }
+  }
+
+  // --- Update Stepper & Panels Locking State Across All Levels ---
+  function updateAllLevelLockingUI(progression) {
+    const isL2Open = progression.level2.isUnlocked;
+    const isL3Open = progression.level3.isUnlocked;
+    const isL4Open = progression.level4.isUnlocked;
+    const isL5Open = progression.level5.isUnlocked;
+
+    // 1. Stepper Badges & Lock State
+    const stepConfig = [
+      { step: 2, isOpen: isL2Open, title: `Level 2 Terkunci: Butuh 10 Hari Sholat Wajib Penuh (${progression.level1.consecutive}/10 Hari)` },
+      { step: 3, isOpen: isL3Open, title: `Level 3 Terkunci: Butuh 10 Hari Sholat Sunnah Penuh (${progression.level2.consecutive}/10 Hari)` },
+      { step: 4, isOpen: isL4Open, title: `Level 4 Terkunci: Butuh 10 Hari Tilawah Al-Qur'an Penuh (${progression.level3.consecutive}/10 Hari)` },
+      { step: 5, isOpen: isL5Open, title: `Level 5 Terkunci: Butuh 4 Hari Shaum Sunnah (${progression.level4.completedDays}/4 Hari)` }
+    ];
+
+    stepConfig.forEach(cfg => {
+      const stepBtn = document.querySelector(`.level-step-card[data-step="${cfg.step}"]`);
+      if (stepBtn) {
+        stepBtn.classList.toggle('locked', !cfg.isOpen);
+        const ind = stepBtn.querySelector('.step-status-indicator');
+        const badge = stepBtn.querySelector('.step-badge');
+        if (!cfg.isOpen) {
+          stepBtn.setAttribute('title', cfg.title);
+          if (badge) badge.textContent = '🔒';
+          if (ind) ind.textContent = '🔒 Kunci';
+        } else {
+          stepBtn.removeAttribute('title');
+          if (badge) badge.textContent = String(cfg.step);
+        }
+      }
+    });
+
+    // 2. Panels Locked Overlay State
+    [
+      { step: 2, isOpen: isL2Open },
+      { step: 3, isOpen: isL3Open },
+      { step: 4, isOpen: isL4Open },
+      { step: 5, isOpen: isL5Open }
+    ].forEach(p => {
+      const panel = document.getElementById(`panel-level-${p.step}`);
+      if (panel) {
+        panel.classList.toggle('is-locked', !p.isOpen);
+      }
+    });
+
+    // 3. Update locked banner text inside panels
+    // Panel 2 Banner (Prerequisite: Level 1)
+    const s2 = document.getElementById('locked-banner-streak-2');
+    const f2 = document.getElementById('locked-progress-fill-2');
+    const h2 = document.getElementById('locked-progress-hint-2');
+    if (s2) s2.textContent = `${progression.level1.consecutive} / 10 Hari (${progression.level1.percent}%)`;
+    if (f2) f2.style.width = `${progression.level1.percent}%`;
+    if (h2) h2.textContent = progression.level1.remaining > 0 ? `Kurang ${progression.level1.remaining} hari lagi sholat fardhu lengkap 5 waktu.` : `Target 10 hari sholat wajib tercapai!`;
+
+    // Panel 3 Banner (Prerequisite: Level 2)
+    const s3 = document.getElementById('locked-banner-streak-3');
+    const f3 = document.getElementById('locked-progress-fill-3');
+    const h3 = document.getElementById('locked-progress-hint-3');
+    if (s3) s3.textContent = `${progression.level2.consecutive} / 10 Hari (${progression.level2.percent}%)`;
+    if (f3) f3.style.width = `${progression.level2.percent}%`;
+    if (h3) h3.textContent = progression.level2.remaining > 0 ? `Kurang ${progression.level2.remaining} hari lagi sholat sunnah di Level 2.` : `Target 10 hari sholat sunnah tercapai!`;
+
+    // Panel 4 Banner (Prerequisite: Level 3)
+    const s4 = document.getElementById('locked-banner-streak-4');
+    const f4 = document.getElementById('locked-progress-fill-4');
+    const h4 = document.getElementById('locked-progress-hint-4');
+    if (s4) s4.textContent = `${progression.level3.consecutive} / 10 Hari (${progression.level3.percent}%)`;
+    if (f4) f4.style.width = `${progression.level3.percent}%`;
+    if (h4) h4.textContent = progression.level3.remaining > 0 ? `Kurang ${progression.level3.remaining} hari lagi tilawah di Level 3.` : `Target 10 hari tilawah Al-Qur'an tercapai!`;
+
+    // Panel 5 Banner (Prerequisite: Level 4)
+    const s5 = document.getElementById('locked-banner-streak-5');
+    const f5 = document.getElementById('locked-progress-fill-5');
+    const h5 = document.getElementById('locked-progress-hint-5');
+    if (s5) s5.textContent = `${progression.level4.completedDays} / 4 Hari (${progression.level4.percent}%)`;
+    if (f5) f5.style.width = `${progression.level4.percent}%`;
+    if (h5) h5.textContent = progression.level4.remaining > 0 ? `Kurang ${progression.level4.remaining} hari lagi shaum sunnah di Level 4.` : `Target 4 hari shaum sunnah tercapai!`;
+
+    // 4. Footer Next Buttons on Each Level
+    const btnNext1 = document.getElementById('btn-next-from-level1');
+    const lblNext1 = document.getElementById('btn-next-level1-label');
+    if (btnNext1) {
+      btnNext1.classList.toggle('locked', !isL2Open);
+      if (lblNext1) lblNext1.textContent = !isL2Open ? `🔒 Level 2 Terkunci (${progression.level1.consecutive}/10 Hari)` : `Lanjut Level 2: Sholat Sunnah`;
+    }
+
+    const btnNext2 = document.getElementById('btn-next-from-level2');
+    const lblNext2 = document.getElementById('btn-next-level2-label');
+    if (btnNext2) {
+      btnNext2.classList.toggle('locked', !isL3Open);
+      if (lblNext2) lblNext2.textContent = !isL3Open ? `🔒 Level 3 Terkunci (${progression.level2.consecutive}/10 Hari)` : `Lanjut Level 3: Baca Al-Qur'an`;
+    }
+
+    const btnNext3 = document.getElementById('btn-next-from-level3');
+    const lblNext3 = document.getElementById('btn-next-level3-label');
+    if (btnNext3) {
+      btnNext3.classList.toggle('locked', !isL4Open);
+      if (lblNext3) lblNext3.textContent = !isL4Open ? `🔒 Level 4 Terkunci (${progression.level3.consecutive}/10 Hari)` : `Lanjut Level 4: Shaum Sunnah`;
+    }
+
+    const btnNext4 = document.getElementById('btn-next-from-level4');
+    const lblNext4 = document.getElementById('btn-next-level4-label');
+    if (btnNext4) {
+      btnNext4.classList.toggle('locked', !isL5Open);
+      if (lblNext4) lblNext4.textContent = !isL5Open ? `🔒 Level 5 Terkunci (${progression.level4.completedDays}/4 Hari)` : `Lanjut Level 5: Hafalan Quran`;
+    }
+  }
+
+  function updateLevelLockingUI(stats) {
+    const progression = getLevelProgressionStats();
+    updateAllLevelLockingUI(progression);
+  }
+
+  // --- Dynamic Locked Modal Trigger ---
+  function openLockedModal(targetLevel) {
+    pendingLockedLevel = targetLevel;
+    const progression = getLevelProgressionStats();
+    const modal = document.getElementById('modal-level-locked');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('locked-modal-title');
+    const descEl = document.getElementById('locked-modal-desc');
+    const streakEl = document.getElementById('locked-modal-current-streak');
+    const btnBack = document.getElementById('btn-locked-back-to-level1');
+    const btnSim = document.getElementById('btn-sim-unlock-from-modal');
+
+    if (targetLevel === 2) {
+      if (titleEl) titleEl.textContent = 'Level 2 : Sholat Sunnah Masih Terkunci! 🔒';
+      if (descEl) {
+        descEl.innerHTML = `Tingkatan Sholat Sunnah belum bisa dibuka. Selesaikan <strong>Sholat Wajib 5 waktu selama 10 hari berturut-turut tanpa bolong</strong> di Level 1 untuk membuka kunci tingkatan ini. Rekor Anda saat ini: <strong>${progression.level1.consecutive} dari 10 hari</strong>.`;
+      }
+      if (streakEl) streakEl.textContent = `${progression.level1.consecutive} / 10 Hari`;
+      if (btnBack) btnBack.innerHTML = `<span>👉 Kerjakan Sholat Wajib (Level 1)</span>`;
+      if (btnSim) btnSim.innerHTML = `<span>⚡ Buka Kunci Level 2 (Simulasi)</span>`;
+    } else if (targetLevel === 3) {
+      if (titleEl) titleEl.textContent = 'Level 3 : Baca Al-Qur\'an Masih Terkunci! 🔒';
+      if (descEl) {
+        descEl.innerHTML = `Tingkatan Tilawah Al-Qur'an belum bisa dibuka. Selesaikan <strong>Sholat Sunnah selama 10 hari berturut-turut</strong> di Level 2 untuk membuka kunci tingkatan ini. Rekor Anda saat ini: <strong>${progression.level2.consecutive} dari 10 hari</strong>.`;
+      }
+      if (streakEl) streakEl.textContent = `${progression.level2.consecutive} / 10 Hari`;
+      if (btnBack) btnBack.innerHTML = `<span>👉 Kerjakan Sholat Sunnah (Level 2)</span>`;
+      if (btnSim) btnSim.innerHTML = `<span>⚡ Buka Kunci Level 3 (Simulasi)</span>`;
+    } else if (targetLevel === 4) {
+      if (titleEl) titleEl.textContent = 'Level 4 : Shaum Sunnah Masih Terkunci! 🔒';
+      if (descEl) {
+        descEl.innerHTML = `Tingkatan Shaum Sunnah belum bisa dibuka. Selesaikan <strong>Tilawah Al-Qur'an selama 10 hari berturut-turut</strong> di Level 3 untuk membuka kunci tingkatan ini. Rekor Anda saat ini: <strong>${progression.level3.consecutive} dari 10 hari</strong>.`;
+      }
+      if (streakEl) streakEl.textContent = `${progression.level3.consecutive} / 10 Hari`;
+      if (btnBack) btnBack.innerHTML = `<span>👉 Kerjakan Tilawah Quran (Level 3)</span>`;
+      if (btnSim) btnSim.innerHTML = `<span>⚡ Buka Kunci Level 4 (Simulasi)</span>`;
+    } else if (targetLevel === 5) {
+      if (titleEl) titleEl.textContent = 'Level 5 : Hafalan Al-Qur\'an Masih Terkunci! 🔒';
+      if (descEl) {
+        descEl.innerHTML = `Mahkota Penghafal Al-Qur'an belum bisa dibuka. Laksanakan <strong>Shaum Sunnah minimal 4 hari (Senin & Kamis / Yaumul Bidh)</strong> di Level 4 untuk membuka kunci tingkatan ini. Capaian Anda saat ini: <strong>${progression.level4.completedDays} dari 4 hari shaum</strong>.`;
+      }
+      if (streakEl) streakEl.textContent = `${progression.level4.completedDays} / 4 Hari`;
+      if (btnBack) btnBack.innerHTML = `<span>👉 Laksanakan Shaum (Level 4)</span>`;
+      if (btnSim) btnSim.innerHTML = `<span>⚡ Buka Kunci Level 5 (Simulasi)</span>`;
+    }
+
+    modal.classList.remove('hidden');
+    playTone(280, 'sawtooth', 0.16, 0.12);
+  }
+
+
   // --- UI Elements ---
   const elDateDisplay = document.getElementById('gregorian-date-label');
   const elHijriDisplay = document.getElementById('hijri-date-label');
@@ -1083,6 +1945,8 @@
   const elMiniRawatib = document.getElementById('mini-rawatib-count');
   const elMiniSunnah = document.getElementById('mini-sunnah-count');
   const elMiniQuran = document.getElementById('mini-quran-count');
+  const elMiniShaum = document.getElementById('mini-shaum-count');
+  const elMiniHafalan = document.getElementById('mini-hafalan-count');
   const elMiniLain = document.getElementById('mini-lain-count');
 
   const elBadgeWajib = document.getElementById('badge-wajib');
@@ -1090,16 +1954,27 @@
   const elBadgeSunnah = document.getElementById('badge-sunnah');
   const elBadgeLain = document.getElementById('badge-lain');
   const elBadgeQuran = document.getElementById('badge-quran');
+  const elBadgeShaum = document.getElementById('badge-shaum');
+  const elBadgeHafalan = document.getElementById('badge-hafalan');
+
+  const elDailyLevelRankPill = document.getElementById('daily-level-rank-pill');
+  const elDailyLevelRankText = document.getElementById('daily-level-rank-text');
 
   // Inputs
   const elTadarusSurah = document.getElementById('quran-tadarus-surah');
   const elTadarusAin = document.getElementById('quran-tadarus-ain');
   const elHafalanSurah = document.getElementById('quran-hafalan-surah');
   const elHafalanAyat = document.getElementById('quran-hafalan-ayat');
+  const elHafalanStart = document.getElementById('hafalan-ayat-start');
+  const elHafalanEnd = document.getElementById('hafalan-ayat-end');
+  const elHafalanStatus = document.getElementById('hafalan-status-select');
   const elTadabburText = document.getElementById('quran-tadabbur-text');
   const elNotes = document.getElementById('journal-notes');
   const elTargetBesok = document.getElementById('journal-target-besok');
   const elToast = document.getElementById('save-status-toast');
+
+  let activeLevelStep = 1;
+  let isAllLevelsViewMode = false;
 
   let wasFullCompleteCelebrated = false;
 
@@ -1367,13 +2242,55 @@
       wasFullCompleteCelebrated = false;
     }
 
-    // Mini Counters
+    // Daily Level Rank Pill
+    if (elDailyLevelRankText) {
+      elDailyLevelRankText.textContent = `Tingkat Ibadah: ${stats.rankTitle}`;
+    }
+    if (elDailyLevelRankPill) {
+      const starEl = elDailyLevelRankPill.querySelector('.rank-star');
+      if (starEl) starEl.textContent = stats.rankIcon;
+    }
+
+    // Mini Counters (5 Levels)
     if (elMiniWajib) elMiniWajib.textContent = `${stats.wajibCount}/5`;
     if (elMiniRawatib) elMiniRawatib.textContent = `${stats.rawatibCount}/8`;
-    if (elMiniSunnah) elMiniSunnah.textContent = `${stats.sunnahCount}/3`;
-    if (elMiniQuran) elMiniQuran.textContent = `${stats.quranCount}/3`;
+    if (elMiniSunnah) elMiniSunnah.textContent = `${stats.totalSunnahCount}/11`;
+    if (elMiniQuran) elMiniQuran.textContent = `${stats.bacaQuranCount}/1`;
+    if (elMiniShaum) elMiniShaum.textContent = `${stats.shaumCount ? 'Puasa ✓' : '-'}`;
+    if (elMiniHafalan) {
+      const memCount = (data.quran?.hafalanAyatList && data.quran.hafalanAyatList.length) || (stats.hafalanCount ? 1 : 0);
+      elMiniHafalan.textContent = `${memCount} Ayat`;
+    }
     if (elMiniLain) elMiniLain.textContent = `${stats.lainCount}/4`;
 
+    // Stepper Track Indicators
+    const ind1 = document.getElementById('step-ind-1');
+    const ind2 = document.getElementById('step-ind-2');
+    const ind3 = document.getElementById('step-ind-3');
+    const ind4 = document.getElementById('step-ind-4');
+    const ind5 = document.getElementById('step-ind-5');
+    const ind6 = document.getElementById('step-ind-6');
+
+    if (ind1) ind1.textContent = `${stats.wajibCount}/5`;
+    if (ind2) ind2.textContent = `${stats.totalSunnahCount}/11`;
+    if (ind3) ind3.textContent = stats.bacaQuranCount ? '✓' : '0/1';
+    if (ind4) ind4.textContent = stats.shaumCount ? 'Puasa ✓' : '-';
+    if (ind5) ind5.textContent = stats.hafalanCount ? '✓' : '0/1';
+    if (ind6) ind6.textContent = (data.notes || data.mood) ? '✓' : 'Amalan';
+
+    document.querySelector('.level-step-card[data-step="1"]')?.classList.toggle('completed', stats.wajibCount === 5);
+    document.querySelector('.level-step-card[data-step="2"]')?.classList.toggle('completed', stats.totalSunnahCount >= 1);
+    document.querySelector('.level-step-card[data-step="3"]')?.classList.toggle('completed', stats.bacaQuranCount === 1);
+    document.querySelector('.level-step-card[data-step="4"]')?.classList.toggle('completed', stats.shaumCount === 1);
+    document.querySelector('.level-step-card[data-step="5"]')?.classList.toggle('completed', stats.hafalanCount === 1);
+    document.querySelector('.level-step-card[data-step="6"]')?.classList.toggle('completed', !!(data.notes || data.mood));
+
+    // Multi-Level Step-by-Step Consistency Challenge & Level Locking
+    const progression = getLevelProgressionStats();
+    renderAllConsistencyCards(progression);
+    updateAllLevelLockingUI(progression);
+
+    // Section Counters Badges
     if (elBadgeWajib) {
       elBadgeWajib.textContent = `${stats.wajibCount}/5`;
       elBadgeWajib.classList.toggle('done', stats.wajibCount === 5);
@@ -1395,8 +2312,18 @@
     }
 
     if (elBadgeQuran) {
-      elBadgeQuran.textContent = `${stats.quranCount}/3`;
-      elBadgeQuran.classList.toggle('done', stats.quranCount === 3);
+      elBadgeQuran.textContent = `${stats.bacaQuranCount}/1`;
+      elBadgeQuran.classList.toggle('done', stats.bacaQuranCount === 1);
+    }
+
+    if (elBadgeShaum) {
+      elBadgeShaum.textContent = stats.shaumCount ? 'Puasa ✓' : '-';
+      elBadgeShaum.classList.toggle('done', stats.shaumCount === 1);
+    }
+
+    if (elBadgeHafalan) {
+      elBadgeHafalan.textContent = stats.hafalanCount ? '1/1' : '0/1';
+      elBadgeHafalan.classList.toggle('done', stats.hafalanCount === 1);
     }
 
     // 2. Checklist Items
@@ -1430,7 +2357,7 @@
       card.classList.toggle('checked', !!(data.lain && data.lain[key]));
     });
 
-    // Quran check headers
+    // Quran check headers (Tadarus, Hafalan, Tadabbur)
     document.querySelectorAll('.quran-check-header').forEach(hdr => {
       const key = hdr.getAttribute('data-key');
       const isDone = !!(data.quran && data.quran[key]);
@@ -1447,12 +2374,56 @@
       }
     });
 
+    // Level 4 Shaum Rendering
+    renderShaumSmartBanner(currentDate);
+
+    const shaumToggleBox = document.getElementById('shaum-toggle-box');
+    const shaumActiveBadge = document.getElementById('shaum-active-badge');
+    const shaumStatusLabel = document.getElementById('shaum-status-label');
+    const shaumCheckbox = document.getElementById('shaum-checkbox');
+
+    if (shaumToggleBox) {
+      shaumToggleBox.classList.toggle('checked', !!stats.shaumCount);
+      if (shaumCheckbox) {
+        const svg = shaumCheckbox.querySelector('svg');
+        if (svg) svg.style.strokeDashoffset = stats.shaumCount ? '0' : '24';
+      }
+    }
+    if (shaumActiveBadge) {
+      shaumActiveBadge.textContent = stats.shaumCount ? '✓ Sedang Berpuasa' : 'Belum Puasa';
+    }
+    if (shaumStatusLabel) {
+      shaumStatusLabel.textContent = stats.shaumCount 
+        ? 'Alhamdulillah, Sedang / Telah Berpuasa Hari Ini' 
+        : 'Sedang / Telah Berpuasa Hari Ini';
+    }
+
+    const curShaumType = data.shaum?.jenis || 'senin-kamis';
+    document.querySelectorAll('.shaum-chip').forEach(chip => {
+      chip.classList.toggle('active', chip.getAttribute('data-type') === curShaumType);
+    });
+
+    // Level 5 Hafalan Per Ayat Inputs & Rendering
+    if (elHafalanStart) elHafalanStart.value = data.quran.hafalanAyatStart || '';
+    if (elHafalanEnd) elHafalanEnd.value = data.quran.hafalanAyatEnd || '';
+    if (elHafalanStatus) elHafalanStatus.value = data.quran.hafalanStatus || 'ziyadah';
+
+    const hafalanTag = document.getElementById('hafalan-count-tag');
+    if (hafalanTag) {
+      const vLen = (data.quran.hafalanAyatList || []).length;
+      hafalanTag.textContent = stats.hafalanCount 
+        ? `${vLen > 0 ? vLen + ' Ayat' : 'Target'} Selesai ✓` 
+        : `${vLen > 0 ? vLen + ' Ayat Dicentang' : 'Belum Selesai'}`;
+    }
+
+    renderHafalanVerseChips(data);
+
     // Quran inputs
-    elTadarusSurah.value = data.quran.tadarusSurah || '';
-    elTadarusAin.value = data.quran.tadarusAin || '';
-    elHafalanSurah.value = data.quran.hafalanSurah || '';
-    elHafalanAyat.value = data.quran.hafalanAyat || '';
-    elTadabburText.value = data.quran.tadabburText || '';
+    if (elTadarusSurah) elTadarusSurah.value = data.quran.tadarusSurah || '';
+    if (elTadarusAin) elTadarusAin.value = data.quran.tadarusAin || '';
+    if (elHafalanSurah) elHafalanSurah.value = data.quran.hafalanSurah || '';
+    if (elHafalanAyat) elHafalanAyat.value = data.quran.hafalanAyat || '';
+    if (elTadabburText) elTadabburText.value = data.quran.tadabburText || '';
 
     // Mood chips
     document.querySelectorAll('.mood-chip').forEach(chip => {
@@ -1460,8 +2431,200 @@
     });
 
     // Journal reflection textareas
-    elNotes.value = data.notes || '';
-    elTargetBesok.value = data.targetBesok || '';
+    if (elNotes) elNotes.value = data.notes || '';
+    if (elTargetBesok) elTargetBesok.value = data.targetBesok || '';
+  }
+
+  // --- Level Progression & Helper Functions ---
+  function renderShaumSmartBanner(date) {
+    const bannerTitle = document.getElementById('shaum-banner-title');
+    const bannerSub = document.getElementById('shaum-banner-sub');
+    const bannerBox = document.getElementById('shaum-smart-banner');
+    if (!bannerTitle || !bannerSub) return;
+
+    const day = date.getDay(); // 0 = Min, 1 = Sen, 4 = Kam
+    const hijriStr = getHijriDate(date);
+    const hijriDayMatch = hijriStr.match(/^\d+/);
+    const hijriDay = hijriDayMatch ? parseInt(hijriDayMatch[0], 10) : 0;
+
+    const isMonday = day === 1;
+    const isThursday = day === 4;
+    const isAyyamulBidh = (hijriDay === 13 || hijriDay === 14 || hijriDay === 15);
+
+    if (isMonday || isThursday) {
+      const dayName = isMonday ? 'Senin' : 'Kamis';
+      bannerTitle.textContent = `⚡ Hari ini hari ${dayName} — Disunnahkan Berpuasa!`;
+      bannerSub.textContent = `Rasulullah ﷺ bersabda: "Amal hamba diperiksa pada hari Senin & Kamis, maka aku suka jika amalku diperiksa saat berpuasa." (HR. Tirmidzi)`;
+      bannerBox?.classList.add('active-recommendation');
+    } else if (isAyyamulBidh) {
+      bannerTitle.textContent = `🌕 Hari ini Yaumul Bidh (${hijriDay} Hijriah)!`;
+      bannerSub.textContent = `Rasulullah ﷺ berpesan untuk shaum pada tanggal 13, 14, dan 15 setiap bulan Hijriah dengan pahala setara puasa setahun penuh (HR. Bukhari).`;
+      bannerBox?.classList.add('active-recommendation');
+    } else {
+      bannerTitle.textContent = 'Jadwal Shaum Sunnah Utama';
+      bannerSub.textContent = `Shaum Senin & Kamis serta Yaumul Bidh (13, 14, 15 tiap bulan Hijriah). Tanggal Hijriah hari ini: ${hijriStr}.`;
+      bannerBox?.classList.remove('active-recommendation');
+    }
+  }
+
+  function renderHafalanVerseChips(data) {
+    const chipsContainer = document.getElementById('hafalan-verse-chips');
+    if (!chipsContainer) return;
+
+    let start = parseInt(data.quran.hafalanAyatStart, 10);
+    let end = parseInt(data.quran.hafalanAyatEnd, 10);
+
+    // If not set, parse from data.quran.hafalanAyat (e.g. "1-5" or "1")
+    if (isNaN(start) || isNaN(end)) {
+      const match = (data.quran.hafalanAyat || '').match(/(\d+)\s*[-–]\s*(\d+)/);
+      if (match) {
+        start = parseInt(match[1], 10);
+        end = parseInt(match[2], 10);
+      } else {
+        const single = parseInt(data.quran.hafalanAyat, 10);
+        if (!isNaN(single)) {
+          start = single;
+          end = single;
+        }
+      }
+    }
+
+    if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
+      chipsContainer.innerHTML = `
+        <div class="empty-tracker-notice">
+          Masukkan nomor ayat (contoh: 1 s/d 5) pada form di atas, lalu klik <strong>⚡ Buka Checklist Ayat</strong>.
+        </div>
+      `;
+      return;
+    }
+
+    const maxEnd = Math.min(start + 50, end);
+    chipsContainer.innerHTML = '';
+
+    const list = Array.isArray(data.quran.hafalanAyatList) ? data.quran.hafalanAyatList : [];
+
+    for (let v = start; v <= maxEnd; v++) {
+      const isMem = list.includes(v);
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = `verse-chip ${isMem ? 'memorized' : ''}`;
+      chip.setAttribute('data-verse', v);
+      chip.innerHTML = `
+        <span class="chip-check">${isMem ? '✓' : '○'}</span>
+        <span>Ayat ${v}</span>
+      `;
+
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const currentData = getCurrentDayData();
+        if (!Array.isArray(currentData.quran.hafalanAyatList)) {
+          currentData.quran.hafalanAyatList = [];
+        }
+
+        const idx = currentData.quran.hafalanAyatList.indexOf(v);
+        if (idx === -1) {
+          currentData.quran.hafalanAyatList.push(v);
+          playTone(660 + (v % 8) * 35, 'triangle', 0.08, 0.1);
+        } else {
+          currentData.quran.hafalanAyatList.splice(idx, 1);
+          playTone(400, 'sine', 0.06, 0.06);
+        }
+
+        // Check if all verses in range are now memorized
+        let allDone = true;
+        for (let checkV = start; checkV <= maxEnd; checkV++) {
+          if (!currentData.quran.hafalanAyatList.includes(checkV)) {
+            allDone = false;
+            break;
+          }
+        }
+        if (allDone && maxEnd >= start) {
+          currentData.quran.hafalanDone = true;
+          triggerConfetti();
+          playCompleteCelebrationSound();
+        }
+
+        saveDatabase();
+        renderJournalForm();
+      });
+
+      chipsContainer.appendChild(chip);
+    }
+  }
+
+  function syncHafalanRangeString(data) {
+    if (data.quran.hafalanAyatStart && data.quran.hafalanAyatEnd) {
+      data.quran.hafalanAyat = `${data.quran.hafalanAyatStart}-${data.quran.hafalanAyatEnd}`;
+    } else if (data.quran.hafalanAyatStart) {
+      data.quran.hafalanAyat = String(data.quran.hafalanAyatStart);
+    }
+  }
+
+  function switchLevelStep(stepNum) {
+    const target = Math.max(1, Math.min(6, parseInt(stepNum, 10)));
+    const progression = getLevelProgressionStats();
+
+    // Enforce step-by-step sequential unlock requirement:
+    if (target === 2 && !progression.level2.isUnlocked) {
+      openLockedModal(2);
+      return;
+    }
+    if (target === 3 && !progression.level3.isUnlocked) {
+      openLockedModal(3);
+      return;
+    }
+    if (target === 4 && !progression.level4.isUnlocked) {
+      openLockedModal(4);
+      return;
+    }
+    if (target === 5 && !progression.level5.isUnlocked) {
+      openLockedModal(5);
+      return;
+    }
+
+    activeLevelStep = target;
+
+    // Update active class on stepper buttons
+    document.querySelectorAll('.level-step-card').forEach(btn => {
+      const s = parseInt(btn.getAttribute('data-step'), 10);
+      btn.classList.toggle('active', s === activeLevelStep);
+      btn.setAttribute('aria-selected', s === activeLevelStep ? 'true' : 'false');
+    });
+
+    // Update panels visibility
+    document.querySelectorAll('.level-panel').forEach(panel => {
+      const l = parseInt(panel.getAttribute('data-level'), 10);
+      panel.classList.toggle('active', l === activeLevelStep);
+    });
+
+    // Scroll smoothly to target panel
+    const targetPanel = document.getElementById(`panel-level-${activeLevelStep}`);
+    if (targetPanel) {
+      targetPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    playTone(520, 'sine', 0.05, 0.06);
+  }
+
+  function toggleLevelViewMode() {
+    isAllLevelsViewMode = !isAllLevelsViewMode;
+    const container = document.getElementById('tab-journal');
+    const modeIcon = document.getElementById('level-mode-icon');
+    const modeText = document.getElementById('level-mode-text');
+
+    if (container) {
+      container.classList.toggle('show-all-levels', isAllLevelsViewMode);
+    }
+
+    if (modeText) {
+      modeText.textContent = isAllLevelsViewMode ? 'Mode Semua Level' : 'Mode Bertahap';
+    }
+    if (modeIcon) {
+      modeIcon.textContent = isAllLevelsViewMode ? '📜' : '📑';
+    }
+
+    showToast(isAllLevelsViewMode ? 'Menampilkan seluruh level sekaligus' : 'Kembali ke mode fokus bertahap');
+    playTone(600, 'sine', 0.06, 0.06);
   }
 
   function renderStatsTab() {
@@ -2252,6 +3415,241 @@
       saveDatabase();
     });
 
+    // Level Stepper Navigation
+    document.querySelectorAll('.level-step-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.getAttribute('data-step');
+        switchLevelStep(step);
+      });
+    });
+
+    document.querySelectorAll('.level-stat-card[data-jump-level]').forEach(card => {
+      card.addEventListener('click', () => {
+        const lvl = card.getAttribute('data-jump-level');
+        switchLevelStep(lvl);
+      });
+    });
+
+    const btnToggleLevelView = document.getElementById('btn-toggle-level-view');
+    if (btnToggleLevelView) {
+      btnToggleLevelView.addEventListener('click', () => {
+        toggleLevelViewMode();
+      });
+    }
+
+    // Step Nav Next & Prev Buttons
+    document.querySelectorAll('.btn-level-next[data-goto]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetStep = btn.getAttribute('data-goto');
+        switchLevelStep(targetStep);
+      });
+    });
+
+    document.querySelectorAll('.btn-level-prev[data-goto]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetStep = btn.getAttribute('data-goto');
+        switchLevelStep(targetStep);
+      });
+    });
+
+    const btnFinishFlow = document.getElementById('btn-finish-journal-flow');
+    if (btnFinishFlow) {
+      btnFinishFlow.addEventListener('click', () => {
+        saveDatabase();
+        playCheckSound();
+        triggerConfetti();
+        showToast('MasyaAllah, seluruh catatan ibadah tersimpan!');
+      });
+    }
+
+    // Multi-Level Step-by-Step Simulation & Lock Modal Events
+    // Level 1 -> 2
+    document.getElementById('btn-sim-unlock-10d')?.addEventListener('click', () => {
+      simulateUnlockLevel(2, true);
+    });
+    document.getElementById('btn-sim-reset-10d')?.addEventListener('click', () => {
+      simulateUnlockLevel(2, false);
+    });
+
+    // Level 2 -> 3
+    document.getElementById('btn-sim-unlock-l3')?.addEventListener('click', () => {
+      simulateUnlockLevel(3, true);
+    });
+    document.getElementById('btn-sim-reset-l3')?.addEventListener('click', () => {
+      simulateUnlockLevel(3, false);
+    });
+
+    // Level 3 -> 4
+    document.getElementById('btn-sim-unlock-l4')?.addEventListener('click', () => {
+      simulateUnlockLevel(4, true);
+    });
+    document.getElementById('btn-sim-reset-l4')?.addEventListener('click', () => {
+      simulateUnlockLevel(4, false);
+    });
+
+    // Level 4 -> 5
+    document.getElementById('btn-sim-unlock-l5')?.addEventListener('click', () => {
+      simulateUnlockLevel(5, true);
+    });
+    document.getElementById('btn-sim-reset-l5')?.addEventListener('click', () => {
+      simulateUnlockLevel(5, false);
+    });
+
+    // Simulation triggers in panel locked banners (.btn-sim-unlock-level)
+    document.querySelectorAll('.btn-sim-unlock-level').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lvl = parseInt(btn.getAttribute('data-unlock-level'), 10) || 2;
+        simulateUnlockLevel(lvl, true);
+      });
+    });
+
+    // Jump buttons in panel locked banners (.btn-jump-to-level)
+    document.querySelectorAll('.btn-jump-to-level').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-goto');
+        if (target) switchLevelStep(target);
+      });
+    });
+
+    // Modal Events
+    document.getElementById('btn-sim-unlock-from-modal')?.addEventListener('click', () => {
+      document.getElementById('modal-level-locked')?.classList.add('hidden');
+      simulateUnlockLevel(pendingLockedLevel, true);
+      switchLevelStep(pendingLockedLevel);
+    });
+
+    document.getElementById('btn-close-modal-locked')?.addEventListener('click', () => {
+      document.getElementById('modal-level-locked')?.classList.add('hidden');
+    });
+
+    document.getElementById('btn-locked-back-to-level1')?.addEventListener('click', () => {
+      document.getElementById('modal-level-locked')?.classList.add('hidden');
+      switchLevelStep(Math.max(1, pendingLockedLevel - 1));
+    });
+
+    document.querySelectorAll('.btn-jump-to-level1').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchLevelStep(1);
+      });
+    });
+
+    // Level 4: Shaum Sunnah Events
+    const shaumToggleBox = document.getElementById('shaum-toggle-box');
+    if (shaumToggleBox) {
+      shaumToggleBox.addEventListener('click', () => {
+        const data = getCurrentDayData();
+        if (!data.shaum) data.shaum = { puasaHariIni: false, jenis: 'senin-kamis', catatan: '' };
+        data.shaum.puasaHariIni = !data.shaum.puasaHariIni;
+        saveDatabase();
+        if (data.shaum.puasaHariIni) {
+          playCheckSound();
+          showToast('Shaum sunnah dicatat! Semoga Allah menerima puasamu.');
+        } else {
+          playTone(450, 'sine', 0.08, 0.08);
+          showToast('Status shaum: Istirahat / Tidak Berpuasa');
+        }
+        renderJournalForm();
+      });
+    }
+
+    document.querySelectorAll('.shaum-chip').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const type = chip.getAttribute('data-type');
+        const data = getCurrentDayData();
+        if (!data.shaum) data.shaum = { puasaHariIni: false, jenis: 'senin-kamis', catatan: '' };
+        data.shaum.jenis = type;
+        data.shaum.puasaHariIni = true;
+        saveDatabase();
+        playCheckSound();
+        renderJournalForm();
+        showToast(`Kategori shaum: ${chip.textContent.trim()}`);
+      });
+    });
+
+    const shaumDoaToggle = document.getElementById('shaum-doa-toggle');
+    const shaumDoaContent = document.getElementById('shaum-doa-content');
+    const shaumDoaArrow = document.getElementById('shaum-doa-arrow');
+    if (shaumDoaToggle && shaumDoaContent) {
+      shaumDoaToggle.addEventListener('click', () => {
+        const isHidden = shaumDoaContent.classList.toggle('hidden');
+        if (shaumDoaArrow) shaumDoaArrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+        playTone(550, 'sine', 0.05, 0.05);
+      });
+    }
+
+    // Level 5: Hafalan Quran Per Ayat Events
+    if (elHafalanStart) {
+      elHafalanStart.addEventListener('input', () => {
+        const data = getCurrentDayData();
+        data.quran.hafalanAyatStart = elHafalanStart.value;
+        syncHafalanRangeString(data);
+        saveDatabase();
+      });
+    }
+
+    if (elHafalanEnd) {
+      elHafalanEnd.addEventListener('input', () => {
+        const data = getCurrentDayData();
+        data.quran.hafalanAyatEnd = elHafalanEnd.value;
+        syncHafalanRangeString(data);
+        saveDatabase();
+      });
+    }
+
+    if (elHafalanStatus) {
+      elHafalanStatus.addEventListener('change', () => {
+        const data = getCurrentDayData();
+        data.quran.hafalanStatus = elHafalanStatus.value;
+        saveDatabase();
+        renderJournalForm();
+      });
+    }
+
+    const btnBuildVerses = document.getElementById('btn-build-verse-tracker');
+    if (btnBuildVerses) {
+      btnBuildVerses.addEventListener('click', () => {
+        const data = getCurrentDayData();
+        const start = parseInt(elHafalanStart?.value, 10) || 1;
+        const end = parseInt(elHafalanEnd?.value, 10) || (start + 4);
+        data.quran.hafalanAyatStart = String(start);
+        data.quran.hafalanAyatEnd = String(end);
+        syncHafalanRangeString(data);
+        saveDatabase();
+        playTone(680, 'triangle', 0.1, 0.12);
+        renderHafalanVerseChips(data);
+        showToast(`Checklist ayat ${start} s/d ${end} siap digunakan!`);
+      });
+    }
+
+    // Direct Jump to Quran Tab buttons
+    const btnJumpQuran = document.getElementById('btn-jump-to-quran-tab');
+    if (btnJumpQuran) {
+      btnJumpQuran.addEventListener('click', () => {
+        switchTab('tab-quran');
+        playTone(600, 'sine', 0.08, 0.08);
+      });
+    }
+
+    const btnListenHafalan = document.getElementById('btn-listen-hafalan-surah');
+    if (btnListenHafalan) {
+      btnListenHafalan.addEventListener('click', () => {
+        const surahName = (elHafalanSurah.value || '').trim();
+        if (surahName && typeof ALL_SURAHS !== 'undefined') {
+          const matched = ALL_SURAHS.find(s => 
+            s.namaLatin.toLowerCase().includes(surahName.toLowerCase()) || 
+            surahName.toLowerCase().includes(s.namaLatin.toLowerCase())
+          );
+          if (matched) {
+            switchTab('tab-quran');
+            openSurahReader(matched.nomor);
+            return;
+          }
+        }
+        switchTab('tab-quran');
+      });
+    }
+
     // "Simpan Jurnal" Primary Button
     document.getElementById('btn-save-journal').addEventListener('click', () => {
       const data = getCurrentDayData();
@@ -2689,12 +4087,21 @@
     const dateFormatted = formatGregorianIndo(currentDate);
     const hijriFormatted = getHijriDate(currentDate);
 
-    let text = `🌙 *JURNAL IBADAH HARIAN*\n`;
+    let text = `🌙 *JURNAL IBADAH HARIAN (5 TINGKATAN AMAL)*\n`;
     text += `📅 ${dateFormatted} (${hijriFormatted})\n`;
+    text += `⭐ *Tingkat Ibadah Hari Ini:* ${stats.rankTitle}\n`;
     text += `📊 Capaian Ibadah: *${stats.percentage}%* (${stats.totalCompleted}/${TOTAL_DAILY_ITEMS} amalan)\n`;
-    text += `🔥 Rangkaian Istiqomah: *${calculateStreak()} Hari*\n\n`;
+    text += `🔥 Rangkaian Istiqomah: *${calculateStreak()} Hari*\n`;
 
-    text += `🕌 *SHOLAT WAJIB (${stats.wajibCount}/5)*\n`;
+    const progression = getLevelProgressionStats();
+    text += `🎯 *STATUS TINGKATAN (STEP-BY-STEP):*\n`;
+    text += `• Level 1 Wajib: ${progression.level1.consecutive}/10 Hari ${progression.level1.isCleared ? '✅ (Tuntas)' : '⏳'}\n`;
+    text += `• Level 2 Sunnah: ${progression.level2.isUnlocked ? (progression.level2.consecutive + '/10 Hari ' + (progression.level2.isCleared ? '✅' : '🔓 Aktif')) : '🔒 Terkunci'}\n`;
+    text += `• Level 3 Quran: ${progression.level3.isUnlocked ? (progression.level3.consecutive + '/10 Hari ' + (progression.level3.isCleared ? '✅' : '🔓 Aktif')) : '🔒 Terkunci'}\n`;
+    text += `• Level 4 Shaum: ${progression.level4.isUnlocked ? (progression.level4.completedDays + '/4 Hari ' + (progression.level4.isCleared ? '✅' : '🔓 Aktif')) : '🔒 Terkunci'}\n`;
+    text += `• Level 5 Hafalan: ${progression.level5.isUnlocked ? '👑 Mahkota Terbuka' : '🔒 Terkunci'}\n\n`;
+
+    text += `🕌 *LEVEL 1 : SHOLAT WAJIB (${stats.wajibCount}/5)*\n`;
     ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'].forEach(k => {
       const itm = (data.wajib && data.wajib[k]) || { done: false, jamaah: false };
       const name = k.charAt(0).toUpperCase() + k.slice(1);
@@ -2703,8 +4110,9 @@
       text += `${icon} ${name}${jamaahTag}\n`;
     });
 
-    text += `\n⭐ *SHOLAT SUNNAH RAWATIB (${stats.rawatibCount}/8)*\n`;
+    text += `\n⭐ *LEVEL 2 : SHOLAT SUNNAH (${stats.totalSunnahCount}/11)*\n`;
     const rwt = data.rawatib || {};
+    text += `_Rawatib (${stats.rawatibCount}/8):_\n`;
     text += `${rwt.qobliyahSubuh ? '✅' : '☐'} Qobliyah Subuh (2 Rakaat) [Mu'akkadah]\n`;
     text += `${rwt.qobliyahDzuhur ? '✅' : '☐'} Qobliyah Dzuhur (2/4 Rakaat) [Mu'akkadah]\n`;
     text += `${rwt.badiyahDzuhur ? '✅' : '☐'} Ba'diyah Dzuhur (2 Rakaat) [Mu'akkadah]\n`;
@@ -2713,24 +4121,37 @@
     text += `${rwt.badiyahMaghrib ? '✅' : '☐'} Ba'diyah Maghrib (2 Rakaat) [Mu'akkadah]\n`;
     text += `${rwt.qobliyahIsya ? '✅' : '☐'} Qobliyah Isya (2 Rakaat)\n`;
     text += `${rwt.badiyahIsya ? '✅' : '☐'} Ba'diyah Isya (2 Rakaat) [Mu'akkadah]\n`;
-
-    text += `\n✨ *SHOLAT SUNNAH LAIN (${stats.sunnahCount}/3)*\n`;
+    text += `_Sunnah Waktu Tertentu (${stats.sunnahCount}/3):_\n`;
     text += `${data.sunnah?.dhuha ? '✅' : '☐'} Dhuha\n`;
     text += `${data.sunnah?.tahajud ? '✅' : '☐'} Tahajud\n`;
     text += `${data.sunnah?.witir ? '✅' : '☐'} Witir\n`;
 
-    text += `\n🌿 *AMALAN LAIN (${stats.lainCount}/4)*\n`;
+    text += `\n📖 *LEVEL 3 : BACA QURAN*\n`;
+    text += `${data.quran.tadarusDone ? '✅' : '☐'} Tadarus: ${data.quran.tadarusSurah || '-'} (Ruku' ${data.quran.tadarusAin || '1'})\n`;
+    if (data.quran.tadabburText) {
+      text += `💡 *Tadabbur/Pelajaran:* "${data.quran.tadabburText}"\n`;
+    }
+
+    text += `\n🌙 *LEVEL 4 : SHAUM SUNNAH*\n`;
+    const isShaum = data.shaum && data.shaum.puasaHariIni;
+    const shaumName = data.shaum?.jenis === 'senin-kamis' ? 'Senin & Kamis'
+      : data.shaum?.jenis === 'ayyamul-bidh' ? 'Yaumul Bidh (13, 14, 15 H)'
+      : data.shaum?.jenis === 'daud' ? 'Puasa Daud'
+      : (data.shaum?.jenis ? 'Shaum Sunnah Pilihan' : 'Puasa Sunnah');
+    text += `${isShaum ? '✅ Berpuasa' : '☐ Tidak Puasa / Istirahat'}: ${isShaum ? shaumName : 'Hari Biasa'}\n`;
+
+    text += `\n👑 *LEVEL 5 : HAFALAN QURAN PER AYAT*\n`;
+    const memAyatCount = (data.quran.hafalanAyatList && data.quran.hafalanAyatList.length) || (data.quran.hafalanDone ? 1 : 0);
+    text += `${data.quran.hafalanDone ? '✅' : '☐'} Hafalan Surah: ${data.quran.hafalanSurah || '-'} (${memAyatCount} Ayat)\n`;
+    if (data.quran.hafalanAyat) {
+      text += `🎯 Rentang: Ayat ${data.quran.hafalanAyat} [${data.quran.hafalanStatus || 'Ziyadah'}]\n`;
+    }
+
+    text += `\n🌿 *AMALAN LAIN & REFLEKSI (${stats.lainCount}/4)*\n`;
     text += `${data.lain?.wudhu ? '✅' : '☐'} Menjaga Wudhu\n`;
     text += `${data.lain?.sedekah ? '✅' : '☐'} Sedekah Subuh\n`;
     text += `${data.lain?.dzikirPagi ? '✅' : '☐'} Dzikir Pagi\n`;
     text += `${data.lain?.dzikirPetang ? '✅' : '☐'} Dzikir Petang\n`;
-
-    text += `\n📖 *AL-QUR'AN HARIAN*\n`;
-    text += `${data.quran.tadarusDone ? '✅' : '☐'} Tadarus 1 'Ain: ${data.quran.tadarusSurah || '-'} (Ruku' ${data.quran.tadarusAin || '1'})\n`;
-    text += `${data.quran.hafalanDone ? '✅' : '☐'} Hafalan 5 Ayat: ${data.quran.hafalanSurah || '-'} (Ayat ${data.quran.hafalanAyat || '-'})\n`;
-    if (data.quran.tadabburText) {
-      text += `💡 *Tadabbur/Pelajaran:* "${data.quran.tadabburText}"\n`;
-    }
 
     if (data.mood) {
       text += `\n💖 *Kondisi Hati:* ${data.mood.toUpperCase()}\n`;
